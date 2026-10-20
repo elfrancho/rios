@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ríos del Litoral · @elfrancho</title>
+<meta name="description" content="El Paraná, el Iguazú y el Salado con datos oficiales: la ola de las crecidas, alturas desde 1980 y el río Salado. Por @elfrancho.">
+<meta property="og:title" content="Ríos del Litoral · @elfrancho">
+<meta property="og:description" content="Mirá cómo baja una crecida del Iguazú a Rosario, con datos oficiales actualizados todos los días.">
+<style>
+:root { color-scheme: dark; --page: #070f14; --surface: #0f1a21; --ink: #f2f5f4; --ink2: #b7c4ca; --muted: #7d8c93; --border: rgba(255,255,255,.1);
+  --accent: #7fe0c4; --sun: #ffd27a; --sand: #e6c27a; }
+* { box-sizing: border-box; }
+body { margin: 0; background: radial-gradient(120% 60% at 70% 0%, #13242e 0%, var(--page) 60%); color: var(--ink);
+  font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; min-height: 100vh; }
+.wrap { max-width: 880px; margin: 0 auto; padding: 40px max(16px, env(safe-area-inset-left, 0px)) 48px max(16px, env(safe-area-inset-right, 0px)); }
+.kicker { color: var(--accent); font-size: 13px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
+h1 { font-size: clamp(32px, 7vw, 48px); line-height: 1.05; margin: 8px 0 12px; text-wrap: balance; }
+.intro { color: var(--ink2); max-width: 60ch; margin: 0 0 28px; }
+.cards { display: grid; gap: 14px; }
+a.card { display: grid; grid-template-columns: 1fr auto; gap: 4px 16px; align-items: center; padding: 20px 22px; border-radius: 14px;
+  background: var(--surface); border: 1px solid var(--border); color: inherit; text-decoration: none; }
+a.card:hover { border-color: color-mix(in srgb, var(--accent) 50%, transparent); }
+a.card:focus-visible { outline: 2px solid var(--sun); outline-offset: 3px; }
+.t { font-size: 21px; font-weight: 800; }
+.d { color: var(--ink2); font-size: 15px; grid-column: 1; }
+.flecha { grid-row: span 2; font-size: 26px; color: var(--accent); }
+.tag { font-size: 12px; font-weight: 700; color: #062019; background: var(--accent); border-radius: 999px; padding: 2px 10px; margin-left: 8px; vertical-align: 3px; }
+.pie { margin-top: 32px; color: var(--muted); font-size: 14px; display: flex; flex-direction: column; gap: 8px; }
+.pie b { color: var(--ink2); }
+.pie a { color: var(--sun); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="kicker">Ríos del Litoral · datos oficiales</div>
+  <h1>¿Cómo viene el río?</h1>
+  <p class="intro">El Iguazú, el Paraná y el Salado con los datos de Prefectura, el INA y la red de alerta de Santa Fe, puestos en gráficos que cualquiera puede mirar. Se actualiza todos los días.</p>
+  <div class="cards">
+    <a class="card" href="ola.html"><span class="t">La ola del Paraná <span class="tag">nuevo</span></span><span class="flecha">→</span>
+      <span class="d">Mirá cómo baja una crecida desde el Iguazú hasta Rosario, día por día. Compará la de ahora con 1983, 1992, 2013, 2014 y 2023.</span></a>
+    <a class="card" href="parana.html"><span class="t">El Paraná desde 1980</span><span class="flecha">→</span>
+      <span class="d">Alturas diarias de Puerto Iguazú, Corrientes y Santa Fe, con zoom sincronizado para ver cómo llegan los picos.</span></a>
+    <a class="card" href="salado.html"><span class="t">El río Salado</span><span class="flecha">→</span>
+      <span class="d">De Tostado a Santo Tomé, con la inundación de 2003, la bajante y el último año, estación por estación.</span></a>
+  </div>
+  <div class="pie">
+    <div><b>Actualizado:</b> martes 20 de octubre de 2026, 15:06 h.</div>
+    <div>Son datos y comparaciones, <b>no pronósticos</b>. El pronóstico oficial lo publica el INA en <a href="https://www.ina.gob.ar/alerta/">ina.gob.ar/alerta</a>.</div>
+    <div>Fuentes: Prefectura Naval Argentina, INA (Sistema de Alerta Hidrológico), Base de Datos Hidrológica Integrada (SNIH), Secretaría de Recursos Hídricos de Santa Fe vía CIM-FICH (UNL).</div>
+    <div>Hecho por <a href="https://www.instagram.com/elfrancho/">@elfrancho</a> · pesca, camping y naturaleza en Santa Fe.</div>
+  </div>
+</div>
+</body>
+</html>
