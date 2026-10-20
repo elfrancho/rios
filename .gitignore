@@ -1,0 +1,13 @@
+# Lo que se publica sale de acá; las historias, videos y pruebas quedan solo en la notebook.
+historias/*
+!historias/salado.py
+!historias/plantilla_salado.html
+web/
+logs/
+respaldo_estilos/
+__pycache__/
+*.pyc
+rios.html
+salado.html
+ola.html
+datos_prefectura/*.bak-*

@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Crecidas Iguazú–Paraná</title>
+<meta property="og:image" content="https://elfrancho.github.io/rios/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta property="og:description" content="Alturas diarias del Iguazú y el Paraná desde 1980, con datos oficiales.">
+<meta name="description" content="Alturas diarias del Iguazú y el Paraná desde 1980, con datos oficiales.">
+<style>
+:root { color-scheme: dark; --page: #070f14; --surface: #0f1a21; --surface2: #15232c; --ink: #f2f5f4; --ink2: #b7c4ca; --muted: #7d8c93;
+  --grid: #1c2a33; --axis: #2e404b; --border: rgba(255,255,255,.1); --accent: #7fe0c4; --sun: #ffd27a;
+  --alerta: #ffb35c; --evac: #ff6b5e; --bajas: #7d8c93;
+  --s-andresito: #9085e9; --s-pi: #4ea3f0; --s-posadas: #e87ba4; --s-corrientes: #ff8a4c; --s-santafe: #3fd29a; }
+* { box-sizing: border-box; }
+body { margin: 0; background: radial-gradient(120% 50% at 70% 0%, #13242e 0%, var(--page) 55%) fixed, var(--page); color: var(--ink); font: 14px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; }
+.wrap { max-width: 1400px; margin: 0 auto; padding: 20px 16px 40px; }
+h1 { margin: 0 0 6px; font-size: clamp(22px, 4vw, 30px); font-weight: 800; line-height: 1.15; }
+.sub { color: var(--ink2); margin: 0 0 14px; max-width: 900px; }
+.controles { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; background: var(--surface);
+  border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; margin-bottom: 10px; }
+.grupo { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.grupo > .lbl { color: var(--muted); font-size: 12px; margin-right: 2px; }
+button, .seg label { font: inherit; font-size: 13px; color: var(--ink); background: transparent; border: 1px solid var(--border);
+  border-radius: 7px; padding: 4px 10px; cursor: pointer; }
+button:hover, .seg label:hover { background: color-mix(in srgb, var(--ink) 6%, transparent); }
+.seg { display: inline-flex; }
+.seg input { position: absolute; opacity: 0; pointer-events: none; }
+.seg label { border-radius: 0; margin-left: -1px; }
+.seg label:first-of-type { border-radius: 7px 0 0 7px; margin-left: 0; }
+.seg label:last-of-type { border-radius: 0 7px 7px 0; }
+.seg input:checked + label { background: var(--accent); border-color: var(--accent); color: #062019; font-weight: 600; }
+.seg input:focus-visible + label, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+label.chk { display: inline-flex; gap: 5px; align-items: center; cursor: pointer; font-size: 13px; }
+.demoras { display: none; gap: 6px 16px; flex-wrap: wrap; align-items: center; font-size: 12px; color: var(--ink2); }
+.demoras.on { display: flex; }
+.demoras input { width: 46px; font: inherit; padding: 2px 4px; border: 1px solid var(--border); border-radius: 5px;
+  background: var(--surface); color: var(--ink); }
+#grafico { width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; }
+.aviso { font-size: 12px; color: var(--ink2); margin: 6px 2px 0; min-height: 1em; }
+.volver { display: inline-block; color: var(--accent); text-decoration: none; font-size: 13px; font-weight: 600; margin-bottom: 8px; }
+.volver:hover { text-decoration: underline; }
+.topbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
+.topbar .volver { margin-bottom: 0; }
+.ig { display: inline-flex; align-items: center; gap: 8px; padding: 4px 12px 4px 4px; border-radius: 999px; text-decoration: none;
+  color: #fff; font-size: 13px; font-weight: 700; background: linear-gradient(90deg, #833ab4, #e1306c 55%, #f77737); white-space: nowrap; }
+.ig img { width: 28px; height: 28px; border-radius: 50%; border: 2px solid #fff; display: block; }
+.ig:focus-visible { outline: 2px solid #ffd27a; outline-offset: 2px; }
+.notas { margin-top: 18px; color: var(--ink2); font-size: 13px; max-width: 980px; }
+.notas h2 { font-size: 14px; color: var(--ink); margin: 0 0 6px; }
+.notas li { margin-bottom: 4px; }
+.notas b { color: var(--ink); font-weight: 600; }
+@media (max-width: 640px) { h1 { font-size: 17px; } .controles { gap: 8px 12px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav class="topbar"><a class="volver" href="./">← Ríos del Litoral</a><a class="ig" href="https://www.instagram.com/elfrancho/" target="_blank" rel="noopener"><img src="perfil.jpg" alt="" width="28" height="28">@elfrancho</a></nav>
+  <h1>Crecidas del Iguazú y del Paraná, día por día desde 1980</h1>
+  <p class="sub">Tres escalas en la misma línea de tiempo: lo que pasa arriba aparece días después abajo.
+    Rueda del mouse para acercar, arrastrar para moverse, barra de abajo para elegir el período. Los gráficos se mueven juntos.</p>
+
+  <div class="controles" role="group" aria-label="Controles">
+    <div class="grupo">
+      <span class="lbl">Ver</span>
+      <span class="seg">
+        <input type="radio" name="var" id="v-alt" value="altura" checked><label for="v-alt">Altura (m)</label>
+        <input type="radio" name="var" id="v-cau" value="caudal"><label for="v-cau">Caudal (m³/s)</label>
+      </span>
+    </div>
+    <div class="grupo">
+      <span class="lbl">Sumar</span>
+      <label class="chk"><input type="checkbox" id="c-andresito"> Iguazú en Andresito</label>
+      <label class="chk"><input type="checkbox" id="c-posadas"> Paraná en Posadas</label>
+    </div>
+    <div class="grupo">
+      <label class="chk"><input type="checkbox" id="c-alinear"> <b>Alinear la onda</b>&nbsp;(corre cada puerto los días que tarda en llegar el agua)</label>
+      <span class="demoras" id="demoras">
+        <span>Iguazú→Corrientes <input type="number" min="0" max="60" id="d-pi"> días</span>
+        <span data-st="iguazu_andresito">Andresito→Corrientes <input type="number" min="0" max="60" id="d-and"> días</span>
+        <span data-st="parana_posadas">Posadas→Corrientes <input type="number" min="0" max="60" id="d-pos"> días</span>
+        <span>Corrientes→Santa Fe <input type="number" min="0" max="60" id="d-sf"> días</span>
+      </span>
+    </div>
+  </div>
+  <div class="controles" role="group" aria-label="Períodos">
+    <div class="grupo" id="periodos"><span class="lbl">Ir a</span></div>
+    <div class="grupo" style="margin-left:auto"><button id="b-csv" type="button">Descargar datos (CSV)</button></div>
+  </div>
+
+  <div id="grafico" role="img" aria-label="Alturas diarias de los ríos Iguazú y Paraná, gráficos apilados y sincronizados"></div>
+  <p class="aviso" id="aviso"></p>
+
+  <div class="notas">
+    <h2>Cómo leerlo</h2>
+    <ul>
+      <li><b>Cada escala tiene su propio cero.</b> Compará formas y momentos de los picos, no los metros de un puerto contra otro. Las líneas punteadas son los niveles de alerta, evacuación y aguas bajas de Prefectura.</li>
+      <li><b>Puerto Iguazú está casi en la desembocadura</b>: su altura también sube con el Paraná que baja de Itaipú y oscila dentro del día por la operación de la represa. Para ver el Iguazú solo, sumá <b>Andresito</b> (arriba de las Cataratas).</li>
+      <li><b>Corrientes no depende solo del Iguazú</b>: en promedio el Iguazú aporta cerca del 9% del caudal que pasa por Corrientes (hasta 20% en crecidas). El resto suma el Alto Paraná brasileño (Itaipú) y el río Paraguay, que entra justo antes. <b>Posadas</b> muestra el Paraná ya con el Iguazú incluido; desde Yacyretá (1994, y la cota final de 2011) esa escala quedó dentro del embalse, así que su altura antes y después no se compara (usá caudal).</li>
+      <li><b>Demoras medidas</b> con 46 años de datos (correlación de las subidas y bajadas semanales): <span id="txt-demoras"></span>. Son promedios: cada crecida viaja a su propio ritmo.</li>
+      <li><b>Datos</b>: promedios diarios del Sistema de Alerta Hidrológico del INA (escalas de Prefectura Naval), con huecos completados desde la Base de Datos Hidrológica Integrada (SNIH). Cruzados con los partes de alturas de la Provincia de Santa Fe: coinciden al centímetro en Corrientes y Santa Fe. Datos al <span id="txt-fecha"></span>.</li>
+    </ul>
+  </div>
+</div>
+
+<script>/*ECHARTS*/</script>
+<script>
+const D = /*DATOS*/;
+const DIA = 86400000;
+const T0 = Date.parse(D.desde + 'T00:00:00Z');
+const ORDEN = ['iguazu_andresito', 'iguazu_puerto_iguazu', 'parana_posadas', 'parana_corrientes', 'parana_santa_fe'];
+const NOMBRE = {
+  iguazu_andresito: 'Río Iguazú en Andresito (arriba de las Cataratas)',
+  iguazu_puerto_iguazu: 'Río Iguazú en Puerto Iguazú',
+  parana_posadas: 'Río Paraná en Posadas',
+  parana_corrientes: 'Río Paraná en Corrientes',
+  parana_santa_fe: 'Río Paraná en Santa Fe',
+};
+const CORTO = { iguazu_andresito: 'Andresito', iguazu_puerto_iguazu: 'Puerto Iguazú', parana_posadas: 'Posadas',
+  parana_corrientes: 'Corrientes', parana_santa_fe: 'Santa Fe' };
+const COLOR_VAR = { iguazu_andresito: '--s-andresito', iguazu_puerto_iguazu: '--s-pi', parana_posadas: '--s-posadas',
+  parana_corrientes: '--s-corrientes', parana_santa_fe: '--s-santafe' };
+const PERIODOS = [
+  ['Todo', null, null], ['Crecida 1983', '1983-01-01', '1983-12-31'], ['1992', '1992-04-01', '1992-09-30'],
+  ['El Niño 1997-98', '1997-09-01', '1998-08-31'], ['Junio 2014', '2014-05-15', '2014-08-15'],
+  ['2015-16', '2015-11-01', '2016-06-30'], ['Bajante 2019-22', '2019-06-01', '2022-12-31'],
+  ['2023-24', '2023-09-01', '2024-03-31'], ['Últimos 12 meses', 'ult12', null], ['Últimos 60 días', 'ult60', null],
+];
+
+const df = (D.desfases || {});
+const lagDe = (k, def) => (df[k] && Number.isFinite(df[k].dias)) ? df[k].dias : def;
+const $ = id => document.getElementById(id);
+$('d-pi').value = lagDe('iguazu_puerto_iguazu->parana_corrientes', 5);
+$('d-and').value = lagDe('iguazu_andresito->parana_corrientes', 6);
+$('d-pos').value = lagDe('parana_posadas->parana_corrientes', 4);
+$('d-sf').value = lagDe('parana_corrientes->parana_santa_fe', 8);
+$('txt-demoras').textContent = `Puerto Iguazú→Corrientes ${$('d-pi').value} días, Corrientes→Santa Fe ${$('d-sf').value} días ` +
+  `(Iguazú→Santa Fe ≈ ${+$('d-pi').value + +$('d-sf').value} días), Posadas→Corrientes ${$('d-pos').value} días`;
+const fmtFecha = ts => { const d = new Date(ts); return `${String(d.getUTCDate()).padStart(2, '0')}/${String(d.getUTCMonth() + 1).padStart(2, '0')}/${d.getUTCFullYear()}`; };
+$('txt-fecha').textContent = fmtFecha(T0 + (D.dias - 1) * DIA);
+
+const nf2 = new Intl.NumberFormat('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const nf0 = new Intl.NumberFormat('es-AR', { maximumFractionDigits: 0 });
+const fmtVal = (v, varb) => v == null ? 's/d' : (varb === 'altura' ? nf2.format(v) + ' m' : nf0.format(v) + ' m³/s');
+
+// estado de la interfaz
+const st = { varb: 'altura', andresito: false, posadas: false, alinear: false };
+try { Object.assign(st, JSON.parse(localStorage.getItem('rios-estado') || '{}')); } catch (e) {}
+$('v-alt').checked = st.varb === 'altura'; $('v-cau').checked = st.varb === 'caudal';
+$('c-andresito').checked = st.andresito; $('c-posadas').checked = st.posadas; $('c-alinear').checked = st.alinear;
+
+function visibles() {
+  return ORDEN.filter(k => (k !== 'iguazu_andresito' || st.andresito) && (k !== 'parana_posadas' || st.posadas));
+}
+// días que se corre cada serie para quedar en "tiempo de Puerto Iguazú"
+function corrimiento(k) {
+  if (!st.alinear) return 0;
+  const lagCorr = {
+    iguazu_andresito: +$('d-and').value || 0, iguazu_puerto_iguazu: +$('d-pi').value || 0,
+    parana_posadas: +$('d-pos').value || 0, parana_corrientes: 0, parana_santa_fe: -(+$('d-sf').value || 0),
+  };
+  return lagCorr[k] - lagCorr.iguazu_puerto_iguazu;
+}
+function valor(k, tsReal) {
+  const arr = D.estaciones[k][st.varb];
+  if (!arr) return null;
+  const i = Math.round((tsReal - T0) / DIA);
+  return i >= 0 && i < arr.length ? arr[i] : null;
+}
+function ultimo(k) {
+  const arr = D.estaciones[k][st.varb];
+  if (!arr) return null;
+  for (let i = arr.length - 1; i >= 0; i--) if (arr[i] != null) return [T0 + i * DIA, arr[i]];
+  return null;
+}
+
+const chart = echarts.init($('grafico'), null, { renderer: 'canvas' });
+let rango = null; // [inicio, fin] visibles, en ms
+
+function css(n) { return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
+
+function render() {
+  const ks = visibles();
+  chart.dispatchAction({ type: 'hideTip' });
+  const angosto = window.innerWidth < 640;
+  const H = angosto ? 150 : (ks.length > 3 ? 175 : 215), TOP = 34, GAP = 30, SLIDER = 56;
+  const alto = ks.length * (H + TOP + GAP) + SLIDER;
+  $('grafico').style.height = alto + 'px';
+  chart.resize();
+  const ink = css('--ink'), ink2 = css('--ink2'), muted = css('--muted'), grid = css('--grid'), axis = css('--axis');
+  const titles = [], grids = [], xs = [], ys = [], series = [];
+  ks.forEach((k, i) => {
+    const e = D.estaciones[k], top = i * (H + TOP + GAP) + TOP, sh = corrimiento(k);
+    const u = ultimo(k);
+    titles.push({
+      text: (st.varb === 'caudal' && k === 'iguazu_puerto_iguazu' ? 'Río Paraná en la confluencia con el Iguazú (caudal total)' : NOMBRE[k]) + (sh ? `  (corrido ${sh > 0 ? '+' : ''}${sh} d)` : ''),
+      subtext: u ? `último dato: ${fmtVal(u[1], st.varb)} el ${fmtFecha(u[0])}` : `sin datos de ${st.varb}`,
+      left: angosto ? 8 : 64, top: top - TOP + 2, itemGap: 2,
+      textStyle: { fontSize: 13, fontWeight: 600, color: ink },
+      subtextStyle: { fontSize: 11, color: muted },
+    });
+    grids.push({ left: angosto ? 44 : 64, right: angosto ? 12 : 120, top: top + 6, height: H - 6 });
+    // mismo rango fijo en todos los ejes: así el zoom (que trabaja en %) cae en las mismas fechas aunque las series estén corridas
+    xs.push({ type: 'time', gridIndex: i, min: T0 - 70 * DIA, max: T0 + (D.dias + 70) * DIA, axisLine: { lineStyle: { color: axis } }, axisTick: { show: false },
+      axisLabel: { color: muted, fontSize: 11, hideOverlap: true }, splitLine: { show: true, lineStyle: { color: grid } } });
+    ys.push({ type: 'value', gridIndex: i, scale: true, splitNumber: 3,
+      axisLabel: { color: muted, fontSize: 11, formatter: v => st.varb === 'altura' ? nf2.format(v).replace(/,00$/, '') : nf0.format(v) },
+      splitLine: { lineStyle: { color: grid } } });
+    const arr = e[st.varb] || [];
+    const data = new Array(arr.length);
+    for (let j = 0; j < arr.length; j++) data[j] = [T0 + (j + sh) * DIA, arr[j]];
+    const marcas = [];
+    if (st.varb === 'altura') {
+      const lab = (txt, c) => ({ show: !angosto, position: 'end', formatter: txt, color: c, fontSize: 11 });
+      if (e.nivel_evacuacion != null) marcas.push({ yAxis: e.nivel_evacuacion, lineStyle: { color: css('--evac') }, label: lab(`Evacuación ${nf2.format(e.nivel_evacuacion)}`, css('--evac')) });
+      if (e.nivel_alerta != null) marcas.push({ yAxis: e.nivel_alerta, lineStyle: { color: css('--alerta') }, label: lab(`Alerta ${nf2.format(e.nivel_alerta)}`, css('--alerta')) });
+      if (e.nivel_aguas_bajas != null && k !== 'parana_posadas') marcas.push({ yAxis: e.nivel_aguas_bajas, lineStyle: { color: css('--bajas') }, label: lab(`Aguas bajas ${nf2.format(e.nivel_aguas_bajas)}`, muted) });
+    }
+    series.push({
+      name: CORTO[k], type: 'line', xAxisIndex: i, yAxisIndex: i, data, showSymbol: false, connectNulls: false,
+      lineStyle: { width: 1.5, color: css(COLOR_VAR[k]) }, itemStyle: { color: css(COLOR_VAR[k]) },
+      emphasis: { disabled: true }, animation: false,
+      markLine: marcas.length ? { silent: true, symbol: 'none', lineStyle: { type: 'dashed', width: 1 }, data: marcas } : undefined,
+    });
+  });
+  const idx = ks.map((_, i) => i);
+  const zoomBase = { xAxisIndex: idx, filterMode: 'filter' };
+  if (rango) Object.assign(zoomBase, { startValue: rango[0], endValue: rango[1] });
+  chart.setOption({
+    backgroundColor: 'transparent', animation: false,
+    textStyle: { fontFamily: 'system-ui, -apple-system, "Segoe UI", sans-serif' },
+    title: titles, grid: grids, xAxis: xs, yAxis: ys, series,
+    axisPointer: { link: [{ xAxisIndex: 'all' }], lineStyle: { color: muted, width: 1 },
+      label: { backgroundColor: ink2, formatter: p => p.axisDimension === 'x' ? fmtFecha(p.value)
+        : (st.varb === 'altura' ? nf2.format(p.value) : nf0.format(p.value)) } },
+    tooltip: {
+      trigger: 'axis', confine: true, backgroundColor: css('--surface'), borderColor: css('--border'),
+      textStyle: { color: ink, fontSize: 12 },
+      axisPointer: { type: 'line', snap: true },
+      formatter: ps => {
+        if (!ps.length) return '';
+        const x = ps[0].value[0];
+        const filas = visibles().map(k => {
+          const sh = corrimiento(k), real = x - sh * DIA, v = valor(k, real);
+          const extra = sh ? ` <span style="color:${muted}">(${fmtFecha(real)})</span>` : '';
+          const sw = `<span style="display:inline-block;width:10px;height:2px;margin:0 6px 3px 0;background:${css(COLOR_VAR[k])}"></span>`;
+          return `<div>${sw}${CORTO[k]}: <b>${fmtVal(v, st.varb)}</b>${extra}</div>`;
+        });
+        const cab = st.alinear ? `${fmtFecha(x)} <span style="color:${muted}">en Puerto Iguazú</span>` : fmtFecha(x);
+        return `<div style="font-weight:600;margin-bottom:4px">${cab}</div>${filas.join('')}`;
+      },
+    },
+    toolbox: { right: 8, top: 0, itemSize: 14, iconStyle: { borderColor: muted },
+      feature: { dataZoom: { yAxisIndex: 'none', title: { zoom: 'Seleccionar período con el mouse', back: 'Deshacer zoom' } },
+        restore: { title: 'Ver todo' }, saveAsImage: { title: 'Guardar imagen', name: 'rios', backgroundColor: css('--surface') } } },
+    dataZoom: [
+      { type: 'inside', ...zoomBase, zoomOnMouseWheel: true, moveOnMouseMove: true },
+      { type: 'slider', ...zoomBase, bottom: 10, height: 26, borderColor: css('--border'), fillerColor: 'rgba(127,224,196,0.15)',
+        handleStyle: { color: css('--surface'), borderColor: muted }, textStyle: { color: muted, fontSize: 11 },
+        labelFormatter: v => fmtFecha(v), dataBackground: { lineStyle: { color: axis }, areaStyle: { color: grid } } },
+    ],
+  }, { notMerge: true });
+  $('demoras').classList.toggle('on', st.alinear);
+  document.querySelectorAll('#demoras [data-st]').forEach(s => {
+    s.style.display = (s.dataset.st === 'iguazu_andresito' ? st.andresito : st.posadas) ? '' : 'none';
+  });
+  const sinCaudal = ks.filter(k => !D.estaciones[k].caudal).map(k => CORTO[k]);
+  $('aviso').textContent = st.alinear
+    ? 'Alineado: el eje muestra la fecha en Puerto Iguazú; cada puerto de abajo está corrido los días que tarda el agua. La fecha real de cada lectura figura entre paréntesis.'
+    : (st.varb === 'caudal' ? 'Caudal: el de Puerto Iguazú es el del Paraná ya sumado el Iguazú (1994-2020); el del Iguazú solo es el de Andresito (desde 2006). Posadas hasta 2017.' +
+      (sinCaudal.length ? ' Sin caudal: ' + sinCaudal.join(', ') + '.' : '') : '');
+  try { localStorage.setItem('rios-estado', JSON.stringify(st)); } catch (e) {}
+}
+
+chart.on('datazoom', () => {
+  const o = chart.getOption().dataZoom[0];
+  if (o && o.startValue != null) rango = [o.startValue, o.endValue];
+});
+chart.on('restore', () => { rango = null; });
+
+function irA(a, b) {
+  const fin = T0 + (D.dias - 1) * DIA;
+  if (a === null) { rango = null; chart.dispatchAction({ type: 'dataZoom', start: 0, end: 100 }); return; }
+  let s, e;
+  if (a === 'ult12') { s = fin - 365 * DIA; e = fin; }
+  else if (a === 'ult60') { s = fin - 60 * DIA; e = fin; }
+  else { s = Date.parse(a + 'T00:00:00Z'); e = Date.parse(b + 'T00:00:00Z'); }
+  rango = [s, e];
+  chart.dispatchAction({ type: 'dataZoom', startValue: s, endValue: e });
+}
+PERIODOS.forEach(([t, a, b]) => {
+  const btn = document.createElement('button');
+  btn.type = 'button'; btn.textContent = t; btn.onclick = () => irA(a, b);
+  $('periodos').appendChild(btn);
+});
+
+document.querySelectorAll('input[name=var]').forEach(r => r.onchange = () => { st.varb = r.value; render(); });
+$('c-andresito').onchange = e => { st.andresito = e.target.checked; render(); };
+$('c-posadas').onchange = e => { st.posadas = e.target.checked; render(); };
+$('c-alinear').onchange = e => { st.alinear = e.target.checked; render(); };
+['d-pi', 'd-and', 'd-pos', 'd-sf'].forEach(id => $(id).onchange = render);
+
+$('b-csv').onclick = () => {
+  const cab = ['fecha'];
+  ORDEN.forEach(k => { cab.push(k + '_altura_m'); if (D.estaciones[k].caudal) cab.push(k + '_caudal_m3s'); });
+  const filas = [cab.join(',')];
+  for (let i = 0; i < D.dias; i++) {
+    const f = [new Date(T0 + i * DIA).toISOString().slice(0, 10)];
+    ORDEN.forEach(k => { const e = D.estaciones[k]; f.push(e.altura[i] ?? ''); if (e.caudal) f.push(e.caudal[i] ?? ''); });
+    filas.push(f.join(','));
+  }
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([filas.join('\n')], { type: 'text/csv' }));
+  a.download = 'alturas_iguazu_parana_desde_1980.csv'; a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+};
+
+window.addEventListener('resize', () => { clearTimeout(window._rz); window._rz = setTimeout(render, 150); });
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change', render);
+render();
+irA('ult12');
+</script>
+</body>
+</html>

@@ -1,0 +1,22 @@
+{
+ "iguazu_puerto_iguazu->parana_corrientes": {
+  "dias": 5,
+  "correlacion": 0.774
+ },
+ "iguazu_andresito->parana_corrientes": {
+  "dias": 6,
+  "correlacion": 0.483
+ },
+ "parana_posadas->parana_corrientes": {
+  "dias": 4,
+  "correlacion": 0.631
+ },
+ "parana_corrientes->parana_santa_fe": {
+  "dias": 8,
+  "correlacion": 0.575
+ },
+ "iguazu_puerto_iguazu->parana_santa_fe": {
+  "dias": 14,
+  "correlacion": 0.323
+ }
+}

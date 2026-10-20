@@ -1,0 +1,60 @@
+# Actualiza https://elfrancho.github.io/rios/ cada hora, sin depender de la notebook.
+# Si una fuente no responde, arma la web igual con los últimos datos guardados en el repo.
+name: Actualizar web
+
+on:
+  schedule:
+    - cron: "7 * * * *"   # a los 7 minutos de cada hora (GitHub puede demorarlo unos minutos)
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: web
+  cancel-in-progress: false
+
+jobs:
+  web:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment:
+      name: github-pages
+      url: ${{ steps.publicar.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Bajar datos del INA
+        continue-on-error: true
+        run: python bajar_ina.py datos_ina
+      - name: Bajar datos del Salado
+        continue-on-error: true
+        run: python bajar_salado.py
+      - name: Volver atrás datos rotos
+        run: |
+          # si una descarga dejó un archivo vacío, se recupera el último bueno
+          for f in $(git diff --name-only -- datos_ina datos_salado); do
+            [ -s "$f" ] || git checkout -- "$f"
+          done
+      - name: Armar páginas
+        run: python publicar_web.py --armar
+      - name: Guardar datos nuevos en el repo
+        run: |
+          git config user.name "elfrancho"
+          git config user.email "elfrancho@users.noreply.github.com"
+          git add datos_ina datos_salado
+          if ! git diff --cached --quiet; then
+            git commit -q -m "Datos $(TZ=America/Argentina/Buenos_Aires date '+%d/%m/%Y %H:%M')"
+            git pull -q --rebase origin main && git push -q origin HEAD:main || echo "no se pudieron guardar los datos (la web se publica igual)"
+          fi
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: web
+      - id: publicar
+        uses: actions/deploy-pages@v4

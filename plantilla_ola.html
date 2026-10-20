@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>La ola del Paraná</title>
+<meta property="og:image" content="https://elfrancho.github.io/rios/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta property="og:description" content="Mirá cómo baja una crecida desde el Iguazú hasta Rosario, día por día, con datos oficiales.">
+<meta name="description" content="Mirá cómo baja una crecida desde el Iguazú hasta Rosario, día por día, con datos oficiales.">
+<style>
+/* Mapa oscuro a propósito (es el "agua de noche" de las historias de @elfrancho); panel a la derecha en pantallas anchas, abajo en el celular. */
+:root { color-scheme: dark; --page: #070f14; --surface: #0f1a21; --surface2: #15232c; --ink: #f2f5f4; --ink2: #b7c4ca; --muted: #7d8c93;
+  --grid: #1c2a33; --axis: #2e404b; --border: rgba(255,255,255,.1); --accent: #7fe0c4; --sun: #ffd27a;
+  --alerta: #ffb35c; --evac: #ff6b5e; --bajas: #7d8c93;
+  --s-andresito: #9085e9; --s-pi: #4ea3f0; --s-posadas: #e87ba4; --s-corrientes: #ff8a4c; --s-santafe: #3fd29a; }
+* { box-sizing: border-box; }
+body { margin: 0; background: radial-gradient(120% 50% at 70% 0%, #13242e 0%, var(--page) 55%) fixed, var(--page); color: var(--ink); font: 14px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; }
+.wrap { max-width: 1320px; margin: 0 auto; padding: 18px 16px 36px; display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 18px; }
+@media (max-width: 900px) { .wrap { grid-template-columns: minmax(0, 1fr); } }
+header { grid-column: 1 / -1; }
+h1 { margin: 0 0 6px; font-size: clamp(22px, 4vw, 30px); font-weight: 800; line-height: 1.15; }
+.sub { margin: 0; color: var(--ink2); max-width: 860px; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; }
+#mapa { background: #0b1820; overflow: hidden; align-self: start; }
+@media (min-width: 901px) { #mapa { position: sticky; top: 12px; } }
+#mapa svg { display: block; width: 100%; height: auto; }
+.panel { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.eventos { display: flex; flex-wrap: wrap; gap: 6px; }
+button { font: inherit; font-size: 13px; color: var(--ink); background: transparent; border: 1px solid var(--border); border-radius: 8px; padding: 5px 11px; cursor: pointer; }
+button:hover { background: rgba(255,255,255,.06); }
+button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: #062019; font-weight: 600; }
+button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid var(--sun); outline-offset: 2px; }
+.tiempo { padding: 14px 16px; display: flex; flex-direction: column; gap: 10px; }
+.fecha { font-size: 34px; font-weight: 800; color: var(--sun); line-height: 1; font-variant-numeric: tabular-nums; }
+.fecha small { font-size: 14px; font-weight: 500; color: var(--muted); margin-left: 8px; }
+.fila-ctl { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+input[type=range] { width: 100%; accent-color: var(--accent); }
+select { font: inherit; font-size: 13px; background: var(--surface2); color: var(--ink); border: 1px solid var(--border); border-radius: 8px; padding: 4px 8px; }
+.tabla { padding: 6px 14px; }
+.tabla table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+.tabla td { padding: 6px 4px; border-top: 1px solid var(--border); vertical-align: middle; }
+.tabla tr:first-child td { border-top: 0; }
+.dot { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-right: 8px; vertical-align: -1px; }
+.v { text-align: right; font-weight: 700; font-size: 15px; white-space: nowrap; }
+.est { font-size: 12px; color: var(--ink2); white-space: nowrap; }
+.pico { font-size: 12px; color: var(--muted); text-align: right; white-space: nowrap; }
+.mini { padding: 10px 12px 6px; }
+.mini svg { display: block; width: 100%; height: auto; }
+.ley { padding: 12px 16px; display: flex; flex-direction: column; gap: 6px; font-size: 12px; color: var(--ink2); }
+.barra { height: 12px; border-radius: 6px; }
+.marcas { display: flex; justify-content: space-between; }
+.volver { display: inline-block; color: var(--accent); text-decoration: none; font-size: 13px; font-weight: 600; margin-bottom: 8px; }
+.volver:hover { text-decoration: underline; }
+.topbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
+.topbar .volver { margin-bottom: 0; }
+.ig { display: inline-flex; align-items: center; gap: 8px; padding: 4px 12px 4px 4px; border-radius: 999px; text-decoration: none;
+  color: #fff; font-size: 13px; font-weight: 700; background: linear-gradient(90deg, #833ab4, #e1306c 55%, #f77737); white-space: nowrap; }
+.ig img { width: 28px; height: 28px; border-radius: 50%; border: 2px solid #fff; display: block; }
+.ig:focus-visible { outline: 2px solid #ffd27a; outline-offset: 2px; }
+@media (max-width: 600px) {
+  .tabla td { padding: 7px 2px; }
+  .tabla td.pico { display: none; }
+  .est { white-space: normal; font-size: 11px; }
+  .tabla .mpico { display: block; font-size: 11px; color: var(--muted); }
+  .v { font-size: 14px; }
+  .fecha { font-size: 28px; }
+  #mapa .nom { font-size: 34px; } #mapa .val { font-size: 31px; }
+}
+.mpico { display: none; }
+.notas { grid-column: 1 / -1; color: var(--ink2); font-size: 13px; max-width: 980px; }
+.notas li { margin-bottom: 4px; } .notas b { color: var(--ink); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <nav class="topbar"><a class="volver" href="./">← Ríos del Litoral</a><a class="ig" href="https://www.instagram.com/elfrancho/" target="_blank" rel="noopener"><img src="perfil.jpg" alt="" width="28" height="28">@elfrancho</a></nav>
+    <h1>La ola del Paraná</h1>
+    <p class="sub">Cómo baja una crecida desde el Iguazú hasta Rosario, día por día. Elegí una crecida, mové la barra o tocá ▶. El color dice qué tan alto está cada puerto respecto de lo normal y de sus niveles de alerta.</p>
+  </header>
+  <div class="card" id="mapa"></div>
+  <div class="panel">
+    <div class="eventos" id="eventos" role="group" aria-label="Crecida"></div>
+    <div class="card tiempo">
+      <div class="fecha" id="fecha"></div>
+      <input type="range" id="t" min="0" max="10" value="0" aria-label="Día">
+      <div class="fila-ctl">
+        <button type="button" id="play">▶ Reproducir</button>
+        <label>Velocidad <select id="vel"><option value="2">2 días/seg</option><option value="5" selected>5 días/seg</option><option value="10">10 días/seg</option></select></label>
+        <span style="color:var(--muted);font-size:12px">También con las flechas ← →</span>
+      </div>
+    </div>
+    <div class="card tabla"><table id="tabla"></table></div>
+    <div class="card mini" id="mini"></div>
+    <div class="card ley">
+      <div class="barra" id="barra"></div>
+      <div class="marcas"><span>aguas bajas</span><span>normal</span><span>alerta</span><span>evacuación</span><span>más</span></div>
+    </div>
+  </div>
+  <ul class="notas">
+    <li><b>Cada puerto se compara consigo mismo:</b> "normal" es la altura típica de ese puerto (mediana 1980-2025). Alerta, evacuación y aguas bajas son los niveles de Prefectura. Por eso se pueden comparar puertos con escalas distintas.</li>
+    <li><b>Entre un puerto y otro el color es interpolado</b>, no medido: sirve para ver el movimiento, no el valor de un punto intermedio. Posadas no está porque desde Yacyretá su altura la regula el embalse.</li>
+    <li><b>Datos:</b> alturas diarias del INA (escalas de Prefectura Naval). Crecida actual hasta el <span id="act"></span>. Mapa esquemático.</li>
+  </ul>
+</div>
+<script>
+const D = /*DATOS*/;
+const NS = 'http://www.w3.org/2000/svg', DIA = 864e5;
+const el = (tag, a, p, txt) => { const e = document.createElementNS(NS, tag); for (const k in a) e.setAttribute(k, a[k]); if (txt != null) e.textContent = txt; if (p) p.appendChild(e); return e; };
+const nf = v => v.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const MES = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
+const fecha = ts => { const d = new Date(ts); return `${d.getUTCDate()} ${MES[d.getUTCMonth()]} ${d.getUTCFullYear()}`; };
+const fCorta = iso => { const [y, m, d] = iso.split('-'); return `${+d}/${+m}/${y.slice(2)}`; };
+document.getElementById('act').textContent = fCorta(D.actualizado);
+
+// ---- nivel relativo de cada puerto: -1 aguas bajas, 0 normal, 1 alerta, 2 evacuación, 3 muy por encima
+function nivel(p, h) {
+  if (h == null) return null;
+  if (h < p.normal) return -Math.min(1.5, (p.normal - h) / Math.max(0.3, p.normal - p.bajas));
+  if (h < p.alerta) return (h - p.normal) / (p.alerta - p.normal);
+  if (h < p.evac) return 1 + (h - p.alerta) / (p.evac - p.alerta);
+  return Math.min(3, 2 + (h - p.evac) / Math.max(0.5, (p.evac - p.alerta) * 2));
+}
+const STOPS = [[-1.5, [138, 90, 43]], [-1, [201, 162, 94]], [0, [61, 143, 214]], [0.6, [127, 214, 230]], [1, [255, 210, 122]], [2, [255, 138, 80]], [3, [214, 48, 58]]];
+function color(v) {
+  if (v == null) return 'rgba(255,255,255,.18)';
+  for (let i = 1; i < STOPS.length; i++) if (v <= STOPS[i][0]) {
+    const [a, ca] = STOPS[i - 1], [b, cb] = STOPS[i], t = Math.max(0, (v - a) / (b - a));
+    return `rgb(${ca.map((c, j) => Math.round(c + (cb[j] - c) * t)).join(',')})`;
+  }
+  return `rgb(${STOPS[STOPS.length - 1][1].join(',')})`;
+}
+document.getElementById('barra').style.background = `linear-gradient(90deg, ${[-1.5, -1, 0, 0.6, 1, 2, 3].map((v, i, a) => `${color(v)} ${(v + 1.5) / 4.5 * 100}%`).join(',')})`;
+
+// ---- mapa esquemático
+const P = (lon, lat) => [60 + (lon + 61.3) * 100, 40 + (-lat - 23.7) * 104];
+const PARANA = [[-54.25, -24.08], [-54.45, -24.8], [-54.59, -25.41], [-54.59, -25.59], [-54.62, -26.40], [-55.02, -26.80], [-55.58, -27.37],
+  [-55.89, -27.37], [-56.69, -27.59], [-57.33, -27.43], [-58.10, -27.33], [-58.57, -27.32], [-58.83, -27.47], [-58.80, -27.95], [-59.05, -28.51],
+  [-59.20, -29.10], [-59.45, -29.62], [-59.53, -30.01], [-59.64, -30.74], [-60.15, -31.23], [-60.60, -31.66], [-60.64, -32.07], [-60.64, -32.95], [-60.45, -33.35]].map(p => P(...p));
+const IGUAZU = [[-53.45, -25.62], [-53.99, -25.60], [-54.20, -25.66], [-54.44, -25.69], [-54.59, -25.59]].map(p => P(...p));
+const PARAGUAY = [[-57.55, -24.2], [-57.63, -25.28], [-58.17, -26.18], [-58.30, -26.86], [-58.57, -27.32]].map(p => P(...p));
+const suave = pts => { let d = `M${pts[0]}`; for (let i = 0; i < pts.length - 1; i++) { const p0 = pts[i - 1] || pts[i], p1 = pts[i], p2 = pts[i + 1], p3 = pts[i + 2] || p2;
+  d += ` C${p1[0] + (p2[0] - p0[0]) / 6},${p1[1] + (p2[1] - p0[1]) / 6} ${p2[0] - (p3[0] - p1[0]) / 6},${p2[1] - (p3[1] - p1[1]) / 6} ${p2[0]},${p2[1]}`; } return d; };
+const svg = el('svg', { viewBox: '0 0 1000 1080', role: 'img', 'aria-label': 'Mapa esquemático del Iguazú y el Paraná coloreado según el nivel de cada puerto' }, document.getElementById('mapa'));
+const defs = el('defs', {}, svg);
+const f = el('filter', { id: 'g', x: '-50%', y: '-50%', width: '200%', height: '200%' }, defs); el('feGaussianBlur', { stdDeviation: 7 }, f);
+el('rect', { width: 1000, height: 1080, fill: '#0b1820' }, svg);
+[['BRASIL', -53.9, -26.9], ['PARAGUAY', -56.1, -24.6], ['ARGENTINA', -61.0, -28.3], ['URUGUAY', -57.6, -32.6]].forEach(([t, lo, la]) => {
+  const [x, y] = P(lo, la); el('text', { x, y, fill: 'rgba(255,255,255,.07)', 'font-size': 34, 'font-weight': 800, 'letter-spacing': 8, 'text-anchor': 'middle' }, svg, t); });
+el('path', { d: suave(PARAGUAY), fill: 'none', stroke: 'rgba(255,255,255,.16)', 'stroke-width': 6, 'stroke-linecap': 'round' }, svg);
+const guia = el('path', { d: suave(PARANA), fill: 'none', stroke: 'none' }, svg), guiaI = el('path', { d: suave(IGUAZU), fill: 'none', stroke: 'none' }, svg);
+const brillo = el('g', { filter: 'url(#g)', opacity: .55 }, svg), trazo = el('g', {}, svg);
+function tramos(path, paso) { const L = path.getTotalLength(), out = []; for (let l = 0; l < L; l += paso) { const a = path.getPointAtLength(l), b = path.getPointAtLength(Math.min(L, l + paso + 1)); out.push({ l, a, b }); } return { L, out }; }
+const TP = tramos(guia, 4), TI = tramos(guiaI, 4);
+const mk = (t, ancho) => t.out.forEach(s => { s.e = el('line', { x1: s.a.x, y1: s.a.y, x2: s.b.x, y2: s.b.y, 'stroke-width': ancho, 'stroke-linecap': 'round' }, trazo);
+  s.g = el('line', { x1: s.a.x, y1: s.a.y, x2: s.b.x, y2: s.b.y, 'stroke-width': ancho * 3, 'stroke-linecap': 'round' }, brillo); });
+mk(TP, 9); mk(TI, 7);
+el('text', { x: P(-57.4, -24.25)[0] - 10, y: P(-57.4, -24.25)[1], fill: 'rgba(255,255,255,.4)', 'font-size': 20, 'text-anchor': 'end' }, svg, 'río Paraguay (sin datos acá)');
+const cerca = (path, T, pt) => { let best = 0, bd = 1e9; for (const s of T.out) { const d = (s.a.x - pt[0]) ** 2 + (s.a.y - pt[1]) ** 2; if (d < bd) { bd = d; best = s.l; } } return best; };
+const PUERTOS = D.puertos.map(p => ({ ...p, pt: P(p.lon, p.lat) }));
+PUERTOS.forEach(p => { p.L = p.k === 'iguazu_andresito' ? cerca(guiaI, TI, p.pt) : cerca(guia, TP, p.pt); });
+const RIO = PUERTOS.filter(p => p.k !== 'iguazu_andresito');
+const LADO = { iguazu_andresito: [10, -40, 'start'], iguazu_puerto_iguazu: [-20, -8, 'end'], parana_corrientes: [-20, 6, 'end'], parana_goya: [20, -6, 'start'],
+  parana_reconquista: [-20, 10, 'end'], parana_la_paz: [20, 4, 'start'], parana_santa_fe: [20, 6, 'start'], parana_rosario: [20, 6, 'start'] };
+PUERTOS.forEach(p => {
+  const g = el('g', {}, svg), [dx, dy, anc] = LADO[p.k];
+  p.halo = el('circle', { cx: p.pt[0], cy: p.pt[1], r: 22, fill: 'none', 'stroke-width': 4, opacity: 0 }, g);
+  p.dot = el('circle', { cx: p.pt[0], cy: p.pt[1], r: 11, stroke: '#0b1820', 'stroke-width': 4 }, g);
+  el('text', { x: p.pt[0] + dx, y: p.pt[1] + dy - 6, fill: '#fff', 'font-size': 24, 'font-weight': 800, 'text-anchor': anc, 'paint-order': 'stroke', stroke: '#0b1820', 'stroke-width': 6, class: 'nom' }, g, p.nombre);
+  p.lbl = el('text', { x: p.pt[0] + dx, y: p.pt[1] + dy + 26, 'font-size': 22, 'font-weight': 700, 'text-anchor': anc, 'paint-order': 'stroke', stroke: '#0b1820', 'stroke-width': 6, class: 'val' }, g, '');
+});
+
+// ---- estado
+let ev = D.eventos[0], dia = ev.dias - 1, jugando = false, ultimoT = 0, acumulado = 0;
+const $t = document.getElementById('t'), $play = document.getElementById('play'), $vel = document.getElementById('vel');
+function valor(k, i) { const a = ev.datos[k]; for (let j = i; j >= 0; j--) if (a[j] != null) return a[j]; return null; }
+function vEn(L, i) { // nivel interpolado a lo largo del Paraná
+  const vs = RIO.map(p => ({ L: p.L, v: nivel(p, valor(p.k, i)) }));
+  if (L <= vs[0].L) return vs[0].v;
+  for (let j = 1; j < vs.length; j++) if (L <= vs[j].L) { const a = vs[j - 1], b = vs[j]; if (a.v == null || b.v == null) return a.v ?? b.v; return a.v + (b.v - a.v) * (L - a.L) / (b.L - a.L); }
+  return vs[vs.length - 1].v;
+}
+function pintar() {
+  const i = Math.round(dia), ts = Date.parse(ev.desde) + i * DIA;
+  document.getElementById('fecha').innerHTML = `${fecha(ts)}<small>día ${i + 1} de ${ev.dias}</small>`;
+  $t.value = i;
+  TP.out.forEach(s => { const c = color(vEn(s.l, i)); s.e.setAttribute('stroke', c); s.g.setAttribute('stroke', c); });
+  const pa = PUERTOS[0], pb = PUERTOS[1], va = nivel(pa, valor(pa.k, i)), vb = nivel(pb, valor(pb.k, i));
+  TI.out.forEach(s => { const t = s.l <= pa.L ? 0 : (s.l - pa.L) / (TI.L - pa.L), v = va == null ? vb : vb == null ? va : va + (vb - va) * t;
+    const c = color(v); s.e.setAttribute('stroke', c); s.g.setAttribute('stroke', c); });
+  let filas = '';
+  PUERTOS.forEach(p => {
+    const h = valor(p.k, i), v = nivel(p, h), c = color(v), pk = ev.picos[p.k];
+    const finVentana = Date.parse(ev.desde) + (ev.dias - 1) * DIA;
+    const abierto = ev.id === 'actual' && pk && Date.parse(pk[1]) >= finVentana - DIA;  // el máximo es de hoy: todavía puede seguir subiendo
+    const enPico = pk && !abierto && Math.abs(Date.parse(pk[1]) - ts) < 1.5 * DIA;
+    p.dot.setAttribute('fill', c); p.lbl.setAttribute('fill', c); p.lbl.textContent = h == null ? 's/d' : nf(h) + ' m';
+    p.halo.setAttribute('stroke', c); p.halo.setAttribute('opacity', enPico ? 1 : 0);
+    const est = v == null ? 'sin dato' : v >= 2 ? 'sobre evacuación' : v >= 1 ? 'sobre alerta' : v <= -1 ? 'aguas bajas' : v < -0.3 ? 'bajo' : v > 0.6 ? 'alto' : 'normal';
+    filas += `<tr><td><span class="dot" style="background:${c}"></span>${p.nombre}<span class="mpico">${abierto ? 'máx. hasta ahora' : 'pico'} ${pk ? nf(pk[0]) + ' · ' + fCorta(pk[1]) : '—'}</span></td><td class="est">${est}${enPico ? ' · <b style="color:var(--sun)">pico</b>' : abierto && i === ev.dias - 1 ? ' · subiendo' : ''}</td>
+      <td class="v" style="color:${c}">${h == null ? 's/d' : nf(h) + ' m'}</td><td class="pico">${abierto ? 'máx. hasta ahora' : 'pico'} ${pk ? nf(pk[0]) + ' · ' + fCorta(pk[1]) : '—'}</td></tr>`;
+  });
+  document.getElementById('tabla').innerHTML = filas;
+  cursor.setAttribute('x1', X(i)); cursor.setAttribute('x2', X(i));
+}
+// ---- mini gráficos (nivel relativo de cada puerto en la crecida elegida)
+let MW = 560, MH = 26, MG = 6, ML = 96;
+let mini, cursor, X;
+function armarMini() {
+  const cont = document.getElementById('mini'); cont.innerHTML = '';
+  const chico = cont.clientWidth < 500; MW = chico ? 380 : 560; ML = chico ? 86 : 96; MH = chico ? 24 : 26;
+  const alto = PUERTOS.length * (MH + MG) + 18;
+  mini = el('svg', { viewBox: `0 0 ${MW} ${alto}`, role: 'img', 'aria-label': 'Nivel relativo de cada puerto durante la crecida' }, cont);
+  X = i => ML + (MW - ML - 8) * i / Math.max(1, ev.dias - 1);
+  const Y = (r, v) => r * (MH + MG) + MH - (Math.max(-1.5, Math.min(3, v)) + 1.5) / 4.5 * MH;
+  PUERTOS.forEach((p, r) => {
+    el('text', { x: ML - 8, y: r * (MH + MG) + MH / 2 + 5, fill: '#b7c4ca', 'font-size': 12, 'text-anchor': 'end' }, mini, p.nombre);
+    el('rect', { x: ML, y: r * (MH + MG), width: MW - ML - 8, height: MH, fill: 'rgba(255,255,255,.03)' }, mini);
+    for (const [v, c] of [[1, '#ffd27a'], [2, '#ff8a50']]) el('line', { x1: ML, x2: MW - 8, y1: Y(r, v), y2: Y(r, v), stroke: c, 'stroke-width': .8, 'stroke-dasharray': '3 3', opacity: .6 }, mini);
+    let d = '', ok = false;
+    for (let i = 0; i < ev.dias; i++) { const h = ev.datos[p.k][i]; if (h == null) { ok = false; continue; } const v = nivel(p, h); d += `${ok ? 'L' : 'M'}${X(i).toFixed(1)},${Y(r, v).toFixed(1)}`; ok = true; }
+    el('path', { d, fill: 'none', stroke: color(nivel(p, ev.picos[p.k] ? ev.picos[p.k][0] : null)), 'stroke-width': 2 }, mini);
+  });
+  el('text', { x: ML, y: alto - 3, fill: '#7d8c93', 'font-size': 11 }, mini, fCorta(ev.desde));
+  el('text', { x: MW - 8, y: alto - 3, fill: '#7d8c93', 'font-size': 11, 'text-anchor': 'end' }, mini, fCorta(new Date(Date.parse(ev.desde) + (ev.dias - 1) * DIA).toISOString().slice(0, 10)));
+  cursor = el('line', { y1: 0, y2: alto - 16, stroke: '#ffd27a', 'stroke-width': 1.5 }, mini);
+  mini.addEventListener('pointerdown', e => { const r = mini.getBoundingClientRect(), x = (e.clientX - r.left) / r.width * MW;
+    dia = Math.max(0, Math.min(ev.dias - 1, Math.round((x - ML) / (MW - ML - 8) * (ev.dias - 1)))); parar(); pintar(); });
+}
+// ---- controles
+function elegir(e) {
+  ev = e; parar(); $t.max = ev.dias - 1; dia = ev.id === 'actual' ? ev.dias - 1 : 0;
+  document.querySelectorAll('#eventos button').forEach(b => b.setAttribute('aria-pressed', b.dataset.id === ev.id));
+  armarMini(); pintar();
+}
+D.eventos.forEach(e => { const b = document.createElement('button'); b.type = 'button'; b.dataset.id = e.id; b.textContent = e.titulo; b.onclick = () => elegir(e); document.getElementById('eventos').appendChild(b); });
+function parar() { jugando = false; $play.textContent = '▶ Reproducir'; }
+function cuadro(ts) {
+  if (!jugando) return;
+  const dt = (ts - ultimoT) / 1000; ultimoT = ts;
+  dia = Math.min(ev.dias - 1, dia + dt * (+$vel.value));
+  pintar();
+  if (dia >= ev.dias - 1) { parar(); return; }
+  requestAnimationFrame(cuadro);
+}
+$play.onclick = () => { if (jugando) { parar(); return; } if (dia >= ev.dias - 1) dia = 0; jugando = true; $play.textContent = '❚❚ Pausa'; ultimoT = performance.now(); requestAnimationFrame(cuadro); };
+$t.oninput = () => { parar(); dia = +$t.value; pintar(); };
+addEventListener('keydown', e => { if (e.target.tagName === 'SELECT') return; if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') { parar(); dia = Math.max(0, Math.min(ev.dias - 1, Math.round(dia) + (e.key === 'ArrowRight' ? 1 : -1))); pintar(); e.preventDefault(); } });
+elegir(D.eventos[0]);
+let _rz; addEventListener('resize', () => { clearTimeout(_rz); _rz = setTimeout(() => { armarMini(); pintar(); }, 200); });
+</script>
+</body>
+</html>

@@ -1,0 +1,93 @@
+
+======== 1. Récords históricos (toda la serie disponible) ========
+Andresito   desde 1984: 09/06/2014 13.15 | 30/05/1992 12.10 | 30/10/2023 10.95 | 26/06/2013 8.84 | 23/05/2007 8.00 | 13/10/2022 7.99
+            mínimo: 01/01/1989 -0.38
+Pto Iguazú  desde 1966: 31/05/1992 40.00 | 13/07/1983 39.29 | 10/06/2014 38.60 | 06/03/1983 34.20 | 23/01/1990 34.20 | 22/05/1987 33.75
+            mínimo: 18/10/1982 2.25
+Posadas     desde 1901: 01/09/2025 10.72 | 03/05/2014 10.68 | 01/10/2014 10.64 | 28/06/2013 10.60 | 15/03/2012 10.58 | 03/01/2015 10.55
+            mínimo: 04/10/1944 -0.73
+Corrientes  desde 1901: 18/07/1983 9.02 | 08/06/1992 8.64 | 05/06/1905 8.57 | 05/03/1983 8.39 | 04/05/1998 8.39 | 01/03/1966 7.93
+            mínimo: 07/10/1944 -0.82
+Santa Fe    desde 1925: 22/06/1992 7.43 | 05/07/1983 7.35 | 02/05/1998 7.26 | 17/03/1983 7.03 | 28/12/1982 6.95 | 17/03/1966 6.94
+            mínimo: 17/01/2022 -0.23
+
+======== 2. Crecida actual: dónde se ubica ========
+Andresito   16/10: 5.60 m (hace 7 d 3.5, hace 30 d 3.57); solo el 0.6% de los días de la historia estuvo más alto; años que lo superaron: 22 (últimos: [2011, 2013, 2014, 2022, 2023, 2026])
+Pto Iguazú  16/10: 32.90 m (hace 7 d 20.8, hace 30 d 19.0); solo el 0.3% de los días de la historia estuvo más alto; años que lo superaron: 8 (últimos: [1990, 1992, 1997, 2013, 2014, 2026])
+Posadas     16/10: 10.34 m (hace 7 d 9.95, hace 30 d 10.32); solo el 1.2% de los días de la historia estuvo más alto; años que lo superaron: 12 (últimos: [2017, 2022, 2023, 2024, 2025, 2026])
+Corrientes  16/10: 6.13 m (hace 7 d 4.75, hace 30 d 3.76); solo el 4.5% de los días de la historia estuvo más alto; años que lo superaron: 60 (últimos: [2015, 2016, 2017, 2018, 2023, 2026])
+Santa Fe    16/10: 3.65 m (hace 7 d 3.45, hace 30 d 2.69); solo el 39.7% de los días de la historia estuvo más alto; años que lo superaron: 95 (últimos: [2017, 2018, 2019, 2023, 2024, 2026])
+
+======== 3. Demora Iguazú→Corrientes→Santa Fe por década (correlación de variaciones semanales) ========
+1970s: Pto Iguazú→Corrientes 5 d (r=0.92) | Corrientes→Santa Fe 9 d (r=0.68)
+1980s: Pto Iguazú→Corrientes 5 d (r=0.85) | Corrientes→Santa Fe 11 d (r=0.58)
+1990s: Pto Iguazú→Corrientes 5 d (r=0.82) | Corrientes→Santa Fe 12 d (r=0.59)
+2000s: Pto Iguazú→Corrientes 4 d (r=0.72) | Corrientes→Santa Fe 8 d (r=0.62)
+2010s: Pto Iguazú→Corrientes 5 d (r=0.74) | Corrientes→Santa Fe 9 d (r=0.49)
+2020s: Pto Iguazú→Corrientes 4 d (r=0.71) | Corrientes→Santa Fe 7 d (r=0.78)
+
+======== 4. Ciclo semanal (efecto de la operación de represas: menos generación el fin de semana) ========
+Andresito   lun -15.1cm  mar  -9.6cm  mié  +4.9cm  jue  +6.6cm  vie  +7.4cm  sáb  +7.3cm  dom  -1.5cm
+Pto Iguazú  lun -53.4cm  mar -32.7cm  mié  +4.4cm  jue +30.2cm  vie +37.5cm  sáb +25.7cm  dom -11.9cm
+Posadas     lun  +2.0cm  mar  +1.1cm  mié  -0.2cm  jue  -1.4cm  vie  -0.8cm  sáb  -1.5cm  dom  +0.8cm
+Corrientes  lun  +4.6cm  mar  -0.8cm  mié  -5.7cm  jue  -4.6cm  vie  -1.2cm  sáb  +2.5cm  dom  +5.2cm
+Santa Fe    lun  -0.4cm  mar  -0.8cm  mié  -0.7cm  jue  +0.0cm  vie  +0.7cm  sáb  +0.8cm  dom  +0.3cm
+Pto Iguazú  1980-84 (antes de Itaipú) 0 +13.1  1 +12.2  2 +10.8  3  +1.4  4 -16.3  5 -15.7  6  -4.9
+Andresito   1980-84 (antes de Itaipú) 0  -5.7  1 -13.4  2  -4.3  3  +7.1  4  +6.3  5  +8.5  6  +2.5
+Posadas     1980-84 (antes de Itaipú) 0  -1.7  1  +1.1  2  +2.2  3  +2.1  4  +0.7  5  -1.7  6  -2.6
+Corrientes  1980-84 (antes de Itaipú) 0  +0.4  1  -0.4  2  -1.2  3  -1.1  4  -0.1  5  +1.1  6  +1.2
+
+======== 5. Bajantes: días por debajo del nivel de aguas bajas, por año (Corrientes y Santa Fe) ========
+Corrientes (< 1.83 m): 2021: 261 d, 2020: 248 d, 1944: 238 d, 1968: 221 d, 1934: 212 d, 1945: 191 d, 1917: 184 d, 1964: 175 d
+   mínimos por año: 07/10/1944 -0.82 | 25/11/1934 -0.29 | 08/09/1925 -0.08 | 24/09/1969 -0.05 | 18/10/1938 -0.03 | 05/10/1903 0.00
+Santa Fe (< 2.0 m): 2021: 287 d, 2020: 279 d, 1944: 260 d, 1964: 244 d, 1968: 241 d, 1945: 234 d, 2022: 226 d, 1934: 223 d
+   mínimos por año: 17/01/2022 -0.23 | 18/08/2021 -0.19 | 01/11/1944 -0.18 | 16/09/1925 -0.11 | 18/09/1934 -0.09 | 25/10/1938 -0.02
+
+======== 6. ¿En qué mes ocurre el máximo anual? (1980-2025) ========
+Andresito   01:2 02:2 03:0 04:3 05:2 06:7 07:1 08:3 09:1 10:10 11:4 12:4
+Pto Iguazú  01:6 02:6 03:3 04:3 05:6 06:5 07:2 08:1 09:2 10:5 11:2 12:5
+Posadas     01:6 02:6 03:2 04:3 05:5 06:3 07:1 08:0 09:2 10:6 11:3 12:9
+Corrientes  01:7 02:5 03:5 04:1 05:4 06:6 07:4 08:0 09:1 10:5 11:3 12:5
+Santa Fe    01:5 02:7 03:6 04:3 05:4 06:3 07:5 08:0 09:0 10:1 11:5 12:7
+
+======== 7. Velocidad: mayor subida en 24 h y en 7 días (desde 1980) ========
+Andresito   24 h: +10.36 m (09/06/2014) | 7 días: +11.97 m (09/06/2014)
+Pto Iguazú  24 h: +16.00 m (09/06/2014) | 7 días: +24.60 m (10/06/2014)
+Posadas     24 h: +9.80 m (11/11/2018) | 7 días: +9.80 m (17/11/2018)
+Corrientes  24 h: +0.95 m (23/08/2020) | 7 días: +2.80 m (30/06/2013)
+Santa Fe    24 h: +0.52 m (17/04/2024) | 7 días: +1.49 m (19/12/1982)
+
+======== 8. Grandes crecidas del Iguazú y qué pasó aguas abajo (picos de Pto Iguazú > 30 m desde 1980) ========
+03/12/1982 Pto Iguazú 31.20 m | Corrientes 7.29→7.80 (+8 d) | Santa Fe 4.42→6.95 (+25 d)
+06/03/1983 Pto Iguazú 34.20 m | Corrientes 8.39→8.37 (+0 d) | Santa Fe 6.68→7.03 (+11 d)
+22/05/1983 Pto Iguazú 35.15 m | Corrientes 8.50→8.69 (+6 d) | Santa Fe 6.68→7.19 (+39 d)
+16/06/1983 Pto Iguazú 38.25 m | Corrientes 8.46→8.98 (+5 d) | Santa Fe 6.92→7.35 (+19 d)
+13/07/1983 Pto Iguazú 39.29 m | Corrientes 8.20→9.02 (+5 d) | Santa Fe 7.14→7.20 (+16 d)
+22/05/1987 Pto Iguazú 33.75 m | Corrientes 5.87→7.38 (+8 d) | Santa Fe 4.75→5.99 (+27 d)
+23/01/1990 Pto Iguazú 34.20 m | Corrientes 6.49→7.93 (+8 d) | Santa Fe 3.79→6.53 (+25 d)
+31/05/1992 Pto Iguazú 40.00 m | Corrientes 7.29→8.64 (+8 d) | Santa Fe 6.13→7.43 (+22 d)
+15/01/1995 Pto Iguazú 30.60 m, caudal Iguazú ≈32,958 m³/s | Corrientes 4.52→6.92 (+11 d) | Santa Fe 3.34→5.29 (+39 d)
+04/02/1997 Pto Iguazú 33.65 m, caudal Iguazú ≈37,548 m³/s | Corrientes 6.60→7.70 (+7 d) | Santa Fe 4.81→6.54 (+27 d)
+05/04/1998 Pto Iguazú 30.40 m, caudal Iguazú ≈32,666 m³/s | Corrientes 6.72→8.05 (+24 d) | Santa Fe 6.10→7.26 (+27 d)
+29/04/1998 Pto Iguazú 31.70 m, caudal Iguazú ≈34,581 m³/s | Corrientes 7.99→8.39 (+5 d) | Santa Fe 7.21→7.26 (+3 d)
+26/06/2013 Pto Iguazú 32.90 m, caudal Iguazú ≈36,393 m³/s | Corrientes 4.66→7.22 (+8 d) | Santa Fe 3.58→5.21 (+31 d)
+10/06/2014 Pto Iguazú 38.60 m, caudal Iguazú ≈45,595 m³/s | Corrientes 4.75→7.16 (+8 d) | Santa Fe 4.14→5.50 (+39 d)
+06/11/2023 Pto Iguazú 30.90 m, caudal Iguazú ≈10,727 m³/s | Corrientes 6.57→7.15 (+4 d) | Santa Fe 3.50→5.40 (+38 d)
+16/10/2026 Pto Iguazú 32.90 m, caudal Iguazú ≈10,727 m³/s | Corrientes 5.75→6.13 (+0 d) | Santa Fe 3.62→3.65 (+0 d)
+
+======== 9. Datos sospechosos ========
+Andresito   mayor racha de valor idéntico: 24 días (hasta 2006-08-17); picos de 1 día: 2 [(datetime.date(2001, 10, 10), 7.4), (datetime.date(2014, 6, 9), 13.15)]; huecos: 220
+Pto Iguazú  mayor racha de valor idéntico: 10 días (hasta 2000-02-01); picos de 1 día: 6 [(datetime.date(1982, 8, 9), 19.1), (datetime.date(1983, 1, 13), 29.08), (datetime.date(2002, 11, 12), 18.2), (datetime.date(2022, 6, 4), 17.68)]; huecos: 9
+Posadas     mayor racha de valor idéntico: 37 días (hasta 2021-06-18); picos de 1 día: 6 [(datetime.date(1995, 11, 19), 3.3), (datetime.date(1996, 9, 15), 3.84), (datetime.date(1998, 2, 28), 4.84), (datetime.date(2000, 2, 9), 2.97)]; huecos: 26
+Corrientes  mayor racha de valor idéntico: 7 días (hasta 1988-09-03); picos de 1 día: 0 []; huecos: 7
+Santa Fe    mayor racha de valor idéntico: 8 días (hasta 1984-06-17); picos de 1 día: 0 []; huecos: 40
+
+======== 10. Promedio por década (altura media) y caudal medio ========
+Corrientes  1900s 3.18/17.5k | 1910s 2.83/14.9k | 1920s 3.61/18.0k | 1930s 3.14/16.1k | 1940s 2.89/15.2k | 1950s 3.19/16.2k | 1960s 3.09/15.2k | 1970s 3.53/17.6k | 1980s 4.52/21.4k | 1990s 4.42/20.9k | 2000s 3.41/16.9k | 2010s 4.02/19.3k | 2020s 2.26/13.0k
+Santa Fe    1920s 2.94 | 1930s 2.99 | 1940s 2.85 | 1950s 3.05 | 1960s 2.84 | 1970s 3.34 | 1980s 4.24/21.6k | 1990s 4.21/23.8k | 2000s 3.13/16.8k | 2010s 3.63/19.7k | 2020s 1.94/13.0k
+Pto Iguazú  1970s 12.13 | 1980s 14.42 | 1990s 15.27/14.5k | 2000s 13.29/12.4k | 2010s 14.41/13.5k | 2020s 9.98
+
+======== 11. Aporte del Iguazú al caudal de Corrientes (días con dato de ambos) ========
+días: 11947; aporte medio 61%, mediana 68%, máximo 214%
+caudal medio Iguazú 11,059 m³/s vs Corrientes 17,523 m³/s
+máximo Iguazú 45,595 m³/s el 2014-06-10; ese día Corrientes 21,325 m³/s

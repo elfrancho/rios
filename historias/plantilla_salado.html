@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1080">
+<title>Río Salado hoy</title>
+<style>
+:root { --ink: #fff; --ink2: rgba(255,255,255,.86); --muted: rgba(255,255,255,.6); --acento: #e6c27a; --sube: #ffd27a; --baja: #6cb6f0;
+  --alerta: #ff9e80; --pista: rgba(255,255,255,.1); }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 1080px; height: 1920px; overflow: hidden; color: var(--ink); font-family: "Segoe UI", system-ui, sans-serif;
+  background: radial-gradient(120% 80% at 55% 30%, #2a2416 0%, #17140d 60%, #0b0a07 100%); }
+#contenido { position: absolute; left: 64px; right: 64px; top: 240px; bottom: 350px; display: flex; flex-direction: column; gap: 10px; }
+.kicker { font-size: 28px; font-weight: 700; letter-spacing: 4px; color: var(--acento); text-transform: uppercase; }
+h1 { font-size: 76px; line-height: 1.02; font-weight: 800; letter-spacing: -1px; }
+.sub { font-size: 28px; color: var(--muted); margin-bottom: 8px; }
+.fila { display: grid; grid-template-columns: 1fr auto; column-gap: 16px; padding: 10px 0 12px; border-top: 1px solid rgba(255,255,255,.1); }
+.fila:first-of-type { border-top: 0; }
+.n { font-size: 34px; font-weight: 800; }
+.n small { font-size: 22px; font-weight: 400; color: var(--muted); }
+.v { font-size: 46px; font-weight: 800; text-align: right; font-variant-numeric: tabular-nums; grid-row: span 2; align-self: center; color: var(--acento); }
+.v small { font-size: 24px; }
+.d { font-size: 25px; font-weight: 700; }
+.chip { font-size: 22px; font-weight: 800; padding: 2px 12px; border-radius: 999px; background: var(--alerta); color: #1a0f0a; margin-left: 10px; }
+.barra { grid-column: 1 / -1; position: relative; height: 12px; border-radius: 6px; background: var(--pista); margin-top: 8px; }
+.relleno { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 6px; background: linear-gradient(90deg, #7a6332, #e6c27a); }
+.marca { position: absolute; top: -7px; bottom: -7px; width: 4px; border-radius: 2px; background: var(--alerta); }
+.nota { font-size: 24px; line-height: 1.3; color: var(--muted); margin-top: 6px; }
+.wm { position: absolute; left: 0; right: 0; bottom: 270px; display: flex; justify-content: center; }
+.wm span { display: inline-flex; align-items: center; gap: 14px; font-size: 38px; font-weight: 700; padding: 12px 30px; border-radius: 999px;
+  background: rgba(0,0,0,.38); color: rgba(255,255,255,.92); border: 1px solid rgba(255,255,255,.22); }
+.wm svg { width: 40px; height: 22px; }
+</style>
+</head>
+<body>
+<div id="contenido"></div>
+<div class="wm"><span><svg viewBox="0 0 40 22" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M2 8c4-5 8-5 12 0s8 5 12 0 8-5 12 0"/><path d="M2 17c4-5 8-5 12 0s8 5 12 0 8-5 12 0" opacity=".6"/></svg>@elfrancho</span></div>
+<script>
+const D = /*DATOS*/;
+const f2 = v => v.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const filas = D.filas.map(f => {
+  const top = Math.max(f.alerta || f.altura, f.altura) * 1.2;
+  const falta = f.alerta != null ? f.alerta - f.altura : null;
+  const chip = falta != null && falta <= 0 ? '<span class="chip">sobre la alerta</span>'
+    : falta != null && falta <= 0.3 ? `<span class="chip">a ${Math.round(falta * 100)} cm de la alerta</span>` : '';
+  const d = f.var == null || Math.abs(f.var) < 0.005 ? '<span style="color:var(--ink2)">● estable</span>'
+    : `<span style="color:${f.var > 0 ? 'var(--sube)' : 'var(--baja)'}">${f.var > 0 ? '▲ subió' : '▼ bajó'} ${Math.round(Math.abs(f.var) * 100)} cm</span>`;
+  const rio = f.rio.replace(/^Río /, '');
+  return `<div class="fila"><div class="n">${f.estacion}${rio !== 'Salado' ? ` <small>${f.rio}</small>` : ''}</div>
+    <div class="v">${f2(f.altura)}<small> m</small></div><div class="d">${d}${chip}</div>
+    <div class="barra"><div class="relleno" style="width:${f.altura / top * 100}%"></div>
+    ${f.alerta != null ? `<div class="marca" style="left:${f.alerta / top * 100}%"></div>` : ''}</div></div>`;
+}).join('');
+document.getElementById('contenido').innerHTML = `<div class="kicker">${D.fecha} · Red de alerta del Salado</div>
+  <h1>Río Salado hoy</h1><div class="sub">De Tostado a Santo Tomé · lectura de las 00 h · variación en 24 h</div>${filas}
+  <p class="nota"><b style="color:var(--alerta)">▌</b> alerta técnica de cada estación. Cada escala tiene su propio cero.<br>Fuente: Secretaría de Recursos Hídricos de Santa Fe, vía CIM-FICH (UNL).</p>`;
+</script>
+</body>
+</html>
