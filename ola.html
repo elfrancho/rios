@@ -52,6 +52,12 @@ select { font: inherit; font-size: 13px; background: var(--surface2); color: var
 .marcas { display: flex; justify-content: space-between; }
 .volver { display: inline-block; color: var(--accent); text-decoration: none; font-size: 13px; font-weight: 600; margin-bottom: 8px; }
 .volver:hover { text-decoration: underline; }
+.barra { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
+.barra .volver { margin-bottom: 0; }
+.ig { display: inline-flex; align-items: center; gap: 8px; padding: 4px 12px 4px 4px; border-radius: 999px; text-decoration: none;
+  color: #fff; font-size: 13px; font-weight: 700; background: linear-gradient(90deg, #833ab4, #e1306c 55%, #f77737); white-space: nowrap; }
+.ig img { width: 28px; height: 28px; border-radius: 50%; border: 2px solid #fff; display: block; }
+.ig:focus-visible { outline: 2px solid #ffd27a; outline-offset: 2px; }
 @media (max-width: 600px) {
   .tabla td { padding: 7px 2px; }
   .tabla td.pico { display: none; }
@@ -69,7 +75,7 @@ select { font: inherit; font-size: 13px; background: var(--surface2); color: var
 <body>
 <div class="wrap">
   <header>
-    <a class="volver" href="./">← Ríos del Litoral · @elfrancho</a>
+    <nav class="barra"><a class="volver" href="./">← Ríos del Litoral</a><a class="ig" href="https://www.instagram.com/elfrancho/" target="_blank" rel="noopener"><img src="perfil.jpg" alt="" width="28" height="28">@elfrancho</a></nav>
     <h1>La ola del Paraná</h1>
     <p class="sub">Cómo baja una crecida desde el Iguazú hasta Rosario, día por día. Elegí una crecida, mové la barra o tocá ▶. El color dice qué tan alto está cada puerto respecto de lo normal y de sus niveles de alerta.</p>
   </header>

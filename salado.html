@@ -33,13 +33,19 @@ label.chk { display: inline-flex; gap: 5px; align-items: center; cursor: pointer
 #grafico { width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; }
 .volver { display: inline-block; color: var(--accent); text-decoration: none; font-size: 13px; font-weight: 600; margin-bottom: 8px; }
 .volver:hover { text-decoration: underline; }
+.barra { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
+.barra .volver { margin-bottom: 0; }
+.ig { display: inline-flex; align-items: center; gap: 8px; padding: 4px 12px 4px 4px; border-radius: 999px; text-decoration: none;
+  color: #fff; font-size: 13px; font-weight: 700; background: linear-gradient(90deg, #833ab4, #e1306c 55%, #f77737); white-space: nowrap; }
+.ig img { width: 28px; height: 28px; border-radius: 50%; border: 2px solid #fff; display: block; }
+.ig:focus-visible { outline: 2px solid #ffd27a; outline-offset: 2px; }
 .notas { margin-top: 18px; color: var(--ink2); font-size: 13px; max-width: 980px; }
 .notas li { margin-bottom: 4px; } .notas b { color: var(--ink); }
 </style>
 </head>
 <body>
 <div class="wrap">
-  <a class="volver" href="./">← Ríos del Litoral · @elfrancho</a>
+  <nav class="barra"><a class="volver" href="./">← Ríos del Litoral</a><a class="ig" href="https://www.instagram.com/elfrancho/" target="_blank" rel="noopener"><img src="perfil.jpg" alt="" width="28" height="28">@elfrancho</a></nav>
   <h1>Río Salado, día por día</h1>
   <p class="sub">De Tostado a Santo Tomé, con la Laguna Setúbal y el Paraná en Santa Fe para comparar. Rueda del mouse para acercar, arrastrar para moverse; los gráficos se mueven juntos.</p>
   <div class="controles">

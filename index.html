@@ -33,10 +33,37 @@ a.card:focus-visible { outline: 2px solid var(--sun); outline-offset: 3px; }
 .pie { margin-top: 32px; color: var(--muted); font-size: 14px; display: flex; flex-direction: column; gap: 8px; }
 .pie b { color: var(--ink2); }
 .pie a { color: var(--sun); }
+.perfil { display: flex; align-items: center; gap: 14px; margin-bottom: 28px; }
+.perfil img { width: 64px; height: 64px; border-radius: 50%; display: block; padding: 3px;
+  background: linear-gradient(45deg, #f77737, #e1306c, #833ab4); }
+.perfil .quien { flex: 1; min-width: 0; line-height: 1.3; }
+.perfil .user { font-weight: 800; font-size: 18px; color: var(--ink); text-decoration: none; }
+.perfil .sub { color: var(--muted); font-size: 14px; }
+.btn-ig { display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: 999px; color: #fff; font-weight: 800;
+  font-size: 15px; text-decoration: none; white-space: nowrap; background: linear-gradient(90deg, #833ab4, #e1306c 55%, #f77737); }
+.btn-ig svg { width: 18px; height: 18px; }
+.btn-ig:focus-visible, .perfil .user:focus-visible { outline: 2px solid var(--sun); outline-offset: 3px; }
+@media (max-width: 520px) { .perfil { flex-wrap: wrap; } .btn-ig { width: 100%; justify-content: center; } }
+.colaborar { margin-top: 28px; padding: 20px 22px; border-radius: 14px; background: color-mix(in srgb, var(--sun) 8%, var(--surface));
+  border: 1px solid color-mix(in srgb, var(--sun) 35%, transparent); }
+.colaborar h2 { margin: 0 0 6px; font-size: 20px; }
+.colaborar p { margin: 0 0 14px; color: var(--ink2); }
+.colaborar .opciones { display: flex; flex-wrap: wrap; gap: 10px; }
+.colaborar a.cafe { display: inline-flex; align-items: center; gap: 8px; padding: 10px 18px; border-radius: 999px; background: var(--sun);
+  color: #2a1d00; font-weight: 800; text-decoration: none; }
+.colaborar button { font: inherit; display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: 999px; cursor: pointer;
+  background: transparent; color: var(--ink); border: 1px solid var(--border); }
+.colaborar button b { color: var(--sun); }
 </style>
 </head>
 <body>
 <div class="wrap">
+  <div class="perfil">
+    <a href="https://www.instagram.com/elfrancho/" target="_blank" rel="noopener"><img src="perfil.jpg" alt="Foto de perfil de @elfrancho" width="64" height="64"></a>
+    <div class="quien"><a class="user" href="https://www.instagram.com/elfrancho/" target="_blank" rel="noopener">@elfrancho</a>
+      <div class="sub">Pesca, camping y naturaleza · Santa Fe</div></div>
+    <a class="btn-ig" href="https://www.instagram.com/elfrancho/" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg>Seguime en Instagram</a>
+  </div>
   <div class="kicker">Ríos del Litoral · datos oficiales</div>
   <h1>¿Cómo viene el río?</h1>
   <p class="intro">El Iguazú, el Paraná y el Salado con los datos de Prefectura, el INA y la red de alerta de Santa Fe, puestos en gráficos que cualquiera puede mirar. Se actualiza todos los días.</p>
@@ -48,8 +75,9 @@ a.card:focus-visible { outline: 2px solid var(--sun); outline-offset: 3px; }
     <a class="card" href="salado.html"><span class="t">El río Salado</span><span class="flecha">→</span>
       <span class="d">De Tostado a Santo Tomé, con la inundación de 2003, la bajante y el último año, estación por estación.</span></a>
   </div>
+  
   <div class="pie">
-    <div><b>Actualizado:</b> martes 20 de octubre de 2026, 15:12 h.</div>
+    <div><b>Actualizado:</b> martes 20 de octubre de 2026, 15:31 h.</div>
     <div>Son datos y comparaciones, <b>no pronósticos</b>. El pronóstico oficial lo publica el INA en <a href="https://www.ina.gob.ar/alerta/">ina.gob.ar/alerta</a>.</div>
     <div>Fuentes: Prefectura Naval Argentina, INA (Sistema de Alerta Hidrológico), Base de Datos Hidrológica Integrada (SNIH), Secretaría de Recursos Hídricos de Santa Fe vía CIM-FICH (UNL).</div>
     <div>Hecho por <a href="https://www.instagram.com/elfrancho/">@elfrancho</a> · pesca, camping y naturaleza en Santa Fe.</div>
