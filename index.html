@@ -77,13 +77,14 @@ a.card:focus-visible { outline: 2px solid var(--sun); outline-offset: 3px; }
   </div>
   <section class="colaborar"><h2>¿Te sirve?</h2><p>Esto lo hago a pulmón, en mis ratos libres. Si querés darme una mano para que siga, cualquier aporte suma.</p><div class="opciones"><a class="cafe" href="https://cafecito.app/elfrancho" target="_blank" rel="noopener">☕ Invitame un cafecito</a><button type="button" onclick="navigator.clipboard.writeText('pancho.isla');this.lastChild.textContent=' ¡copiado!'">Alias: <b>pancho.isla</b><span></span></button></div></section>
   <div class="pie">
-    <div><b>Actualizado:</b> martes 20 de octubre de 2026, 16:59 h.</div>
+    <div><b>Actualizado:</b> martes 20 de octubre de 2026, 17:01 h.</div>
     <div id="visitas" hidden></div><script>Promise.all(["/rios", "/rios/ola.html", "/rios/parana.html", "/rios/salado.html"].map(p => fetch("https://elfrancho.goatcounter.com/counter/" + encodeURIComponent(p) + ".json").then(r => r.ok ? r.json() : { count: "0" }).then(j => +String(j.count).replace(/\D/g, "")).catch(() => 0))).then(v => { const n = v.reduce((a, b) => a + b, 0); if (!n) return; const e = document.getElementById("visitas"); e.textContent = "👀 " + n.toLocaleString("es-AR") + " visitas desde el 20/10/2026"; e.hidden = false; });</script>
     <div>Son datos y comparaciones, <b>no pronósticos</b>. El pronóstico oficial lo publica el INA en <a href="https://www.ina.gob.ar/alerta/">ina.gob.ar/alerta</a>.</div>
     <div>Fuentes: Prefectura Naval Argentina, INA (Sistema de Alerta Hidrológico), Base de Datos Hidrológica Integrada (SNIH), Secretaría de Recursos Hídricos de Santa Fe vía CIM-FICH (UNL).</div>
     <div>Hecho por <a href="https://www.instagram.com/elfrancho/">@elfrancho</a> · pesca, camping y naturaleza en Santa Fe.</div>
   </div>
 </div>
+<script>window.goatcounter = { path: function () { return location.pathname.replace(/\/$/, "") || "/"; } };</script>
 <script data-goatcounter="https://elfrancho.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </body>
 </html>
