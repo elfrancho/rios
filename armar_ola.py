@@ -24,6 +24,7 @@ PUERTOS = [
 EVENTOS = [  # id, título, desde, hasta (None = hasta el último dato)
     ("actual", "Crecida actual (2026)", "2026-09-15", None),
     ("2023", "Crecida de 2023", "2023-10-01", "2024-02-15"),
+    ("2016", "Crecida de 2015-16", "2015-11-01", "2016-03-31"),
     ("2014", "Crecida de 2014", "2014-05-25", "2014-09-15"),
     ("2013", "Crecida de 2013", "2013-06-01", "2013-09-10"),
     ("1992", "Crecida de 1992", "1992-05-01", "1992-09-15"),
