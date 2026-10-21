@@ -27,7 +27,9 @@ Estado al 19/10/2026, 13 h. Proyecto personal de Francisco. Todo corre en la not
 ## Sitio público
 
 - **https://elfrancho.github.io/rios/** — portada con la ola, el Paraná desde 1980 y el Salado. Repo `elfrancho/rios` (cuenta personal de GitHub), carpeta local `web/`.
-- Se actualiza solo después del parte de las 13:00 (`publicar_web.py`: baja datos, regenera y hace push). Manual: `python publicar_web.py` (o `--sin-datos`).
+- **Desde el 20/10/2026 se actualiza sola cada hora en GitHub** (`.github/workflows/web.yml`), aunque la notebook esté apagada: baja INA y Salado, arma y publica; si una fuente falla, publica con los últimos datos del repo y commitea los datos nuevos. Esta carpeta `rios\` es el repo (las historias quedan afuera por `.gitignore`).
+- `python publicar_web.py` sube cambios de plantillas/scripts (y pide una actualización); `--local` arma `web\` para revisar sin publicar. El parte de las 13:00 lo sigue llamando al final.
+- Para tocar el workflow hace falta el permiso `workflow` en el token de elfrancho (ya otorgado el 20/10).
 - Revisión en celular y PC: `node historias\animacion\capturar_web.js http://localhost:8765/web <carpeta>` (emula un celular de 390 px y una PC de 1440 px, y avisa si algo se sale del ancho). Imagen para compartir el link: `og.png` (se genera desde `og.html`).
 - Foto de perfil (`perfil.jpg`, bajada de su Instagram) y botón "Seguime en Instagram" en la portada; chip con foto y @elfrancho arriba de cada página.
 - Bloque "¿Te sirve?" para aportes: se activa completando `CAFECITO` y/o `ALIAS` arriba de `publicar_web.py`; vacíos, no se muestra.
