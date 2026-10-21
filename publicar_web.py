@@ -53,9 +53,11 @@ def visitas_api():
         req = urllib.request.Request(url, headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json"})
         with urllib.request.urlopen(req, timeout=30) as r:
             return int(json.load(r)["total"])
+    except urllib.error.HTTPError as e:
+        print("sin total de visitas del panel:", e.code, e.read()[:300].decode("utf-8", "replace"))
     except Exception as e:
         print("sin total de visitas del panel:", type(e).__name__)
-        return None
+    return None
 
 
 def contador_portada():
