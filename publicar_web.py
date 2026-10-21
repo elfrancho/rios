@@ -10,7 +10,7 @@ Uso:
 - python publicar_web.py --armar    (lo usa GitHub) arma web/ con los datos que haya, sin bajar ni publicar.
 - python publicar_web.py --local    arma web/ bajando datos, para revisar en la notebook sin publicar.
 """
-import datetime as dt, os, shutil, subprocess, sys
+import datetime as dt, json, os, shutil, subprocess, sys, urllib.request
 
 AQUI = os.path.dirname(os.path.abspath(__file__))
 WEB = os.path.join(AQUI, "web")
@@ -40,9 +40,30 @@ def contador_script():
             f'<script data-goatcounter="https://{GOATCOUNTER}.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>\n')
 
 
+def visitas_api():
+    """Total de visitas desde CONTADOR_DESDE, pedido al panel de GoatCounter con la llave de solo lectura.
+    En GitHub la llave está en el secreto GOATCOUNTER_TOKEN; sin llave (o si falla) devuelve None."""
+    token = os.environ.get("GOATCOUNTER_TOKEN")
+    if not (GOATCOUNTER and token):
+        return None
+    d, m, a = CONTADOR_DESDE.split("/")
+    fin = (dt.datetime.now(dt.timezone.utc) + dt.timedelta(hours=1)).strftime("%Y-%m-%dT%H:00:00Z")
+    url = f"https://{GOATCOUNTER}.goatcounter.com/api/v0/stats/total?start={a}-{m}-{d}T00:00:00Z&end={fin}"
+    try:
+        req = urllib.request.Request(url, headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json"})
+        with urllib.request.urlopen(req, timeout=30) as r:
+            return int(json.load(r)["total"])
+    except Exception as e:
+        print("sin total de visitas del panel:", type(e).__name__)
+        return None
+
+
 def contador_portada():
     if not GOATCOUNTER:
         return ""
+    n = visitas_api()
+    if n:  # número del panel, al día con la última actualización (cada hora)
+        return f'<div id="visitas">👀 {n:,} visitas desde el {CONTADOR_DESDE}</div>'.replace(",", ".")
     # Suma página por página: el total del sitio (TOTAL.json) en GoatCounter se actualiza con mucha demora.
     return ('<div id="visitas" hidden></div><script>Promise.all(["/rios", "/rios/ola.html", "/rios/parana.html", "/rios/salado.html"]'
             '.map(p => fetch("https://' + GOATCOUNTER + '.goatcounter.com/counter/" + encodeURIComponent(p) + ".json")'

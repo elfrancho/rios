@@ -43,6 +43,8 @@ jobs:
             [ -s "$f" ] || git checkout -- "$f"
           done
       - name: Armar páginas
+        env:
+          GOATCOUNTER_TOKEN: ${{ secrets.GOATCOUNTER_TOKEN }}  # llave de solo lectura para el contador de la portada
         run: python publicar_web.py --armar
       - name: Guardar datos nuevos en el repo
         run: |
