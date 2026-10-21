@@ -12,8 +12,8 @@ Estado al 19/10/2026, 13 h. Proyecto personal de Francisco. Todo corre en la not
 | Datos diarios del INA, y de la base nacional (SNIH) para completar huecos | `datos_ina\`, `datos\` | `bajar_ina.py`, `bajar_snih.py` |
 | Hallazgos del análisis histórico (récords, bajante, ciclo semanal de Itaipú, demoras) | `analisis_salida.txt`, `analisis2_salida.txt` | `analisis.py`, `analisis2.py` |
 | Carrusel 4:5 y 9 historias del 16/10 | `historias\png_carrusel\`, `historias\png\` | `historias\armar_historias.py` |
-| **Parte diario** (3 historias) | `historias\partes\<fecha>\` | `historias\parte_diario.py`; lo envía `enviar_parte.ps1` |
-| **Historia del río Salado** (8 estaciones, red de alerta provincial vía CIM-FICH, lectura 00 h; sale como historia 4 del parte) | `historias\partes\<fecha>\parte_4.png` | `historias\salado.py [carpeta]` |
+| **Parte diario** (2 historias desde el 21/10/2026) | `historias\partes\<fecha>\` | `historias\parte_diario.py [--formato X] [--sin-video]`; lo envía `enviar_parte.ps1` |
+| **Historia del río Salado** (8 estaciones, red de alerta provincial vía CIM-FICH, lectura 00 h; sale los sábados como historia 2 del parte) | `historias\partes\<fecha>\parte_4.png` | `historias\salado.py [carpeta]` |
 | **Aviso de la noche** (1 historia, solo con novedad) | `historias\partes\<fecha>\aviso.png` | `historias\aviso_noche.py`; lo envía `enviar_aviso.ps1` |
 | Historial propio de lecturas de Prefectura | `datos_prefectura\lecturas.csv` | se completa en cada parte |
 | Reel "El viaje del agua" (crecida 2013, voz de Jorge) | `historias\animacion\reel\` | `historias\animacion\armar_reel.py` |
@@ -23,6 +23,14 @@ Estado al 19/10/2026, 13 h. Proyecto personal de Francisco. Todo corre en la not
 | Historias sueltas (pronóstico INA, Día de la Madre con el chajá) | `historias\extra\` | HTML + Chrome headless (ver cada .html) |
 | Historia promo de la web (video 14 s con la ola en un celular + flyer fijo, 20/10) | `historias\extra\promo_web\` | `node historias\animacion\capturar_ola.js ola.html historias\extra\promo_web\ola 36 0`, después `captura.js promo.html cuadros` + ffmpeg (ver comentario en `promo.html`; las fechas del mapa están fijas en el script) |
 | Fotos de su Instagram usadas de fondo | `historias\fotos_ig\`, `historias\fondos\` | — |
+
+## Parte diario: cómo está armado (rediseño del 21/10/2026)
+
+Antes eran 4 historias iguales todos los días y cansaban. Ahora son 2:
+- **Historia 1, la noticia del día.** El titular se arma solo con lo que pasó: un puerto que cruzó una marca, que se movió fuerte en un día o en la semana, que sigue en evacuación, o Santa Fe. Ese puerto queda como protagonista, con el número grande, y el resto va en lista. Si el protagonista repite el de ayer y no cruzó ninguna marca, pierde prioridad para que rote (`protagonista` en `estado.json`). El color sigue al protagonista: coral si está en evacuación, ámbar en alerta, verde si sube y azul si está quieto. La parte de abajo queda libre, con la foto, para pegar una encuesta.
+- **Historia 2, rota según el día** (`ROTACION` en `parte_diario.py`): lunes y viernes la onda (gráfico, también en video); martes la escala de cada puerto ("¿Cuánto falta para la alerta?"); miércoles y domingo "¿Es mucho para un 21 de octubre?" (el mismo día desde 1980, Santa Fe y Corrientes); jueves el dato del día; sábado el río Salado (si el CIM falla, sale el dato).
+- `mail.txt` lleva qué es cada historia y la **encuesta sugerida** del día; `enviar_parte.ps1` la pega en el mail.
+- Copias de antes del rediseño: `historias\*.bak-20261021`.
 
 ## Sitio público
 

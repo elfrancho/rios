@@ -1,7 +1,7 @@
 """Historia "Río Salado hoy": 8 estaciones de la red de alerta de la cuenca (Provincia de Santa Fe), publicada por el CIM-FICH (UNL).
 
 Uso: python salado.py [carpeta_salida]   -> <carpeta>/parte_4.png  (por defecto partes/<hoy>/)
-También lo llama parte_diario.py para sumar la historia 4 al parte de las 13:00.
+También lo llama parte_diario.py los sábados, como historia 2 del parte (parte_2.png).
 Los datos son una lectura por día, tomada a las 00 h.
 """
 import datetime as dt, html, json, os, re, subprocess, sys, urllib.request
@@ -31,7 +31,7 @@ def leer():
     return (m.group(1) if m else ""), filas
 
 
-def main(carpeta=None):
+def main(carpeta=None, nombre="parte_4.png"):
     fecha_txt, filas = leer()
     if not filas:
         raise RuntimeError("El CIM no devolvió datos del Salado")
@@ -42,7 +42,7 @@ def main(carpeta=None):
     html_txt = open(os.path.join(AQUI, "plantilla_salado.html"), encoding="utf-8").read().replace("/*DATOS*/", json.dumps(datos, ensure_ascii=False))
     pagina = os.path.join(carpeta, "salado.html")
     open(pagina, "w", encoding="utf-8").write(html_txt)
-    png = os.path.join(carpeta, "parte_4.png")
+    png = os.path.join(carpeta, nombre)
     chrome = next(c for c in CHROME if os.path.exists(c))
     subprocess.run([chrome, "--headless=new", "--disable-gpu", "--hide-scrollbars", "--force-device-scale-factor=1",
                     "--window-size=1080,1920", "--virtual-time-budget=3000", "--allow-file-access-from-files",
