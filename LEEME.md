@@ -29,7 +29,7 @@ Estado al 19/10/2026, 13 h. Proyecto personal de Francisco. Todo corre en la not
 
 Antes eran 4 historias iguales todos los días y cansaban. Ahora son 2:
 - **Historia 1, la noticia del día.** El titular se arma solo con lo que pasó: un puerto que cruzó una marca, que se movió fuerte en un día o en la semana, que sigue en evacuación, o Santa Fe. Ese puerto queda como protagonista, con el número grande, y el resto va en lista. Si el protagonista repite el de ayer y no cruzó ninguna marca, pierde prioridad para que rote (`protagonista` en `estado.json`). El color sigue al protagonista: coral si está en evacuación, ámbar en alerta, verde si sube y azul si está quieto. La parte de abajo queda libre, con la foto, para pegar una encuesta.
-- **Historia 2, rota según el día** (`ROTACION` en `parte_diario.py`): lunes y viernes la onda (gráfico, también en video); martes la escala de cada puerto ("¿Cuánto falta para la alerta?"); miércoles y domingo "¿Es mucho para un 21 de octubre?" (el mismo día desde 1980, Santa Fe y Corrientes); jueves el dato del día; sábado el río Salado (si el CIM falla, sale el dato).
+- **Historia 2, rota según el día** (`ROTACION` en `parte_diario.py`): lunes y jueves la onda (gráfico, también en video); martes y viernes la escala de cada puerto ("¿Cuánto falta para la alerta?"); miércoles y domingo el dato del día; sábado el río Salado (si el CIM falla, sale el dato). El formato "historia" (puntos del mismo día desde 1980) existe pero quedó fuera de la rotación el 21/10: a Francisco le resultó confuso.
 - `mail.txt` lleva qué es cada historia y la **encuesta sugerida** del día; `enviar_parte.ps1` la pega en el mail.
 - Copias de antes del rediseño: `historias\*.bak-20261021`.
 
