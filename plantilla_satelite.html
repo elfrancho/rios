@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Crecidas desde el espacio · @elfrancho</title>
+<meta name="description" content="Compará las grandes crecidas del Paraná y del Salado en Santa Fe con imágenes satelitales reales: 1992, 1998, 2003, 2016, la bajante de 2022 y hoy.">
+<meta property="og:title" content="Las crecidas desde el espacio · @elfrancho">
+<meta property="og:description" content="Deslizá y compará Santa Fe en cada gran crecida, con imágenes satelitales reales.">
+<meta property="og:image" content="https://elfrancho.github.io/rios/og.png">
+<style>
+:root { color-scheme: dark; --page: #070f14; --surface: #0f1a21; --ink: #f2f5f4; --ink2: #b7c4ca; --muted: #7d8c93; --border: rgba(255,255,255,.1);
+  --accent: #7fe0c4; --sun: #ffd27a; --sand: #e6c27a; --a: #7fe0c4; --b: #ffd27a; }
+* { box-sizing: border-box; }
+body { margin: 0; background: radial-gradient(120% 60% at 70% 0%, #13242e 0%, var(--page) 60%); color: var(--ink);
+  font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; min-height: 100vh; }
+.wrap { max-width: 880px; margin: 0 auto; padding: 28px max(16px, env(safe-area-inset-left, 0px)) 48px max(16px, env(safe-area-inset-right, 0px)); }
+.chip { display: inline-flex; align-items: center; gap: 8px; color: var(--ink2); text-decoration: none; font-weight: 700; font-size: 14px;
+  border: 1px solid var(--border); border-radius: 999px; padding: 6px 12px 6px 6px; }
+.chip img { width: 26px; height: 26px; border-radius: 50%; }
+.kicker { color: var(--accent); font-size: 13px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; margin-top: 22px; }
+h1 { font-size: clamp(30px, 7vw, 46px); line-height: 1.05; margin: 8px 0 12px; text-wrap: balance; }
+h2 { font-size: 22px; margin: 34px 0 8px; }
+.intro { color: var(--ink2); max-width: 62ch; margin: 0 0 18px; }
+.intro b { color: var(--ink); }
+.tabs { display: flex; gap: 8px; margin: 18px 0 14px; flex-wrap: wrap; }
+.tabs button { font: inherit; font-weight: 800; padding: 9px 16px; border-radius: 999px; cursor: pointer; background: var(--surface); color: var(--ink2);
+  border: 1px solid var(--border); }
+.tabs button[aria-pressed="true"] { background: var(--accent); color: #062019; border-color: transparent; }
+.elegir { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10px; margin-bottom: 12px; }
+.elegir label { display: flex; flex-direction: column; gap: 4px; font-size: 13px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
+.elegir label.a { color: var(--a); } .elegir label.b { color: var(--b); }
+.elegir select { width: 100%; min-width: 0; text-overflow: ellipsis; font: inherit; font-size: 15px; font-weight: 700; color: var(--ink); background: var(--surface); border: 2px solid var(--border); border-radius: 12px; padding: 10px; }
+.elegir label.a select { border-color: color-mix(in srgb, var(--a) 60%, transparent); }
+.elegir label.b select { border-color: color-mix(in srgb, var(--b) 60%, transparent); }
+.visor { position: relative; width: 100%; max-width: 520px; margin: 0 auto; aspect-ratio: 9 / 16; max-height: 82vh; border-radius: 16px; overflow: hidden;
+  background: #000; touch-action: pan-y; user-select: none; -webkit-user-select: none; border: 1px solid var(--border); }
+.visor img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
+.visor .agua { opacity: 0; transition: opacity .25s; }
+.visor.con-agua .agua { opacity: .7; }
+.visor .lado-b { clip-path: inset(0 0 0 var(--corte, 50%)); }
+.barra { position: absolute; top: 0; bottom: 0; left: var(--corte, 50%); width: 0; pointer-events: none; }
+.barra::before { content: ""; position: absolute; top: 0; bottom: 0; left: -2px; width: 4px; background: #fff; box-shadow: 0 0 10px rgba(0,0,0,.6); }
+.barra span { position: absolute; top: 50%; left: -24px; width: 48px; height: 48px; margin-top: -24px; border-radius: 50%; background: #fff; color: #0b1218;
+  display: grid; place-items: center; font-weight: 900; font-size: 18px; box-shadow: 0 2px 12px rgba(0,0,0,.5); }
+.etq { position: absolute; top: 10px; max-width: 46%; padding: 6px 10px; border-radius: 10px; background: rgba(0,0,0,.62); font-size: 13px; line-height: 1.25; pointer-events: none; }
+.etq b { display: block; font-size: 15px; }
+.etq.a { left: 10px; border-left: 4px solid var(--a); } .etq.b { right: 10px; border-right: 4px solid var(--b); text-align: right; }
+.lugar { position: absolute; transform: translate(-50%, -50%); font-weight: 800; font-size: 13px; color: #fff; text-shadow: 0 0 4px #000, 0 0 8px #000; pointer-events: none; }
+.controles { display: flex; justify-content: center; align-items: center; gap: 14px; margin: 12px 0 4px; flex-wrap: wrap; }
+.controles input[type=range] { width: min(520px, 100%); accent-color: var(--accent); }
+.controles label { display: inline-flex; align-items: center; gap: 8px; font-weight: 700; color: var(--ink2); cursor: pointer; }
+.datos { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; }
+.dato { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 14px; }
+.dato.a { border-top: 4px solid var(--a); } .dato.b { border-top: 4px solid var(--b); }
+.dato h3 { margin: 0 0 4px; font-size: 17px; }
+.dato .fecha { color: var(--muted); font-size: 13px; }
+.dato .num { font-size: 30px; font-weight: 900; line-height: 1.1; margin-top: 8px; font-variant-numeric: tabular-nums; }
+.dato .num small { font-size: 14px; color: var(--ink2); font-weight: 700; }
+.dato p { margin: 8px 0 0; color: var(--ink2); font-size: 14px; }
+.dato .cred { color: var(--muted); font-size: 12px; margin-top: 8px; }
+@media (max-width: 560px) { .datos { grid-template-columns: 1fr; } .dato .num { font-size: 26px; } }
+.graf { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 14px; }
+.graf svg { width: 100%; height: auto; display: block; }
+.graf p { color: var(--ink2); font-size: 14px; margin: 8px 0 0; }
+.ayuda { background: color-mix(in srgb, var(--accent) 7%, var(--surface)); border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+  border-radius: 14px; padding: 14px 16px; color: var(--ink2); font-size: 15px; }
+.ayuda b { color: var(--ink); }
+.pie { margin-top: 34px; color: var(--muted); font-size: 13px; display: flex; flex-direction: column; gap: 6px; }
+.pie a { color: var(--sun); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="chip" href="./"><img src="perfil.jpg" alt="">@elfrancho · Ríos del Litoral</a>
+  <div class="kicker">Imágenes satelitales reales</div>
+  <h1>Las crecidas desde el espacio</h1>
+  <p class="intro">Elegí dos momentos y <b>deslizá la línea</b> para compararlos. Todas las imágenes muestran exactamente el mismo recuadro:
+    Santa Fe, la laguna Setúbal y las islas (o el oeste de la ciudad, para el Salado). Arriba de cada una va la altura que marcaba el río ese día.</p>
+
+  <div class="tabs" role="group" aria-label="Río">
+    <button type="button" data-marco="parana" aria-pressed="true">Río Paraná</button>
+    <button type="button" data-marco="salado" aria-pressed="false">Río Salado</button>
+  </div>
+  <div class="elegir">
+    <label class="a">Izquierda<select id="selA"></select></label>
+    <label class="b">Derecha<select id="selB"></select></label>
+  </div>
+  <div class="visor" id="visor">
+    <img id="imgA" alt="">
+    <img id="aguaA" class="agua" alt="">
+    <img id="imgB" class="lado-b" alt="">
+    <img id="aguaB" class="agua lado-b" alt="">
+    <div id="lugares"></div>
+    <div class="etq a" id="etqA"></div>
+    <div class="etq b" id="etqB"></div>
+    <div class="barra"><span>⇆</span></div>
+  </div>
+  <div class="controles">
+    <input type="range" id="corte" min="0" max="100" value="50" aria-label="Mover la línea de comparación">
+    <label><input type="checkbox" id="verAgua"> Resaltar el agua en celeste</label>
+  </div>
+  <div class="datos">
+    <div class="dato a" id="datoA"></div>
+    <div class="dato b" id="datoB"></div>
+  </div>
+
+  <h2>¿Qué es "la altura" del río?</h2>
+  <div class="ayuda"><b>No es la profundidad.</b> Es lo que marca una regla (escala) en el puerto, medida desde un cero de referencia.
+    Sirve para comparar días y años en el mismo lugar. En Santa Fe, el Paraná está en <b>alerta desde los 5,30 m</b>; el récord es
+    <b>7,43 m (22/06/1992)</b>. En Recreo, el Salado está en alerta desde 4,70 m, y su récord desde 1980 es <b>7,88 m (30/04/2003)</b>.
+    Cada puerto tiene su propia regla: no se comparan metros de lugares distintos.</div>
+
+  <h2 id="tituloGraf">Más altura, más agua</h2>
+  <div class="graf"><div id="graf"></div>
+    <p>Cada punto es una de las imágenes: la altura del río ese día y cuánta agua se ve dentro del recuadro. Los puntos huecos (☁) son imágenes con nubes: el agua que tapan no se cuenta, así que en realidad había más.</p></div>
+
+  <div class="pie">
+    <div><b>Imágenes:</b> Copernicus Sentinel-2 (contiene datos modificados de Copernicus Sentinel, ESA) y Landsat 5, 7 y 8 (USGS/NASA),
+      vía Microsoft Planetary Computer. No hay imágenes utilizables de 1983 sobre Santa Fe.</div>
+    <div><b>Agua:</b> índice de agua (MNDWI) sobre cada imagen, sin contar nubes. Los km² son el agua visible dentro del recuadro de
+      18 × 32 km, no el área total de la crecida. Las imágenes más viejas son de 30 m por píxel; las de Sentinel-2, de 10 m.</div>
+    <div><b>Alturas:</b> INA y Prefectura Naval (Paraná en Santa Fe); red de alerta del Salado y SNIH (Recreo).</div>
+    <div><a href="./">← Volver a Ríos del Litoral</a> · <a href="https://www.instagram.com/elfrancho/" target="_blank" rel="noopener">Seguime en Instagram</a></div>
+  </div>
+</div>
+<script>
+const E = /*ESCENAS*/;
+const LUGARES = { parana: [["Santa Fe", 17, 55.5], ["Laguna Setúbal", 50, 34.5]], salado: [["Río Salado", 17, 43], ["Santa Fe", 55, 50]] };
+const POR_DEFECTO = { parana: ["p2026", "p1992"], salado: ["s2026", "s2003b"] };
+const f2 = v => v == null ? "s/d" : v.toLocaleString("es-AR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const fecha = iso => { const [a, m, d] = iso.split("-"); return `${+d}/${+m}/${a}`; };
+const $ = id => document.getElementById(id);
+let marco = "parana";
+
+function opciones() {
+  const lista = E.filter(e => e.marco === marco);
+  for (const [sel, def] of [[$("selA"), POR_DEFECTO[marco][0]], [$("selB"), POR_DEFECTO[marco][1]]]) {
+    sel.innerHTML = lista.map(e => `<option value="${e.id}">${e.titulo} (${fecha(e.fecha)})</option>`).join("");
+    sel.value = def;
+  }
+  $("lugares").innerHTML = LUGARES[marco].map(([n, x, y]) => `<span class="lugar" style="left:${x}%;top:${y}%">${n}</span>`).join("");
+  $("tituloGraf").textContent = marco === "parana" ? "Más altura, más agua (Paraná)" : "Más altura, más agua (Salado)";
+  mostrar();
+  grafico();
+}
+
+function altura(e) {
+  return marco === "parana" ? `Paraná en Santa Fe: <b>${f2(e.parana_sf)} m</b>` : `Salado en Recreo: <b>${f2(e.salado_recreo)} m</b>`;
+}
+
+function mostrar() {
+  const a = E.find(e => e.id === $("selA").value), b = E.find(e => e.id === $("selB").value);
+  $("imgA").src = `satelite/${a.id}.jpg`; $("aguaA").src = `satelite/${a.id}_agua.png`;
+  $("imgB").src = `satelite/${b.id}.jpg`; $("aguaB").src = `satelite/${b.id}_agua.png`;
+  $("etqA").innerHTML = `<b>${a.titulo}</b>${fecha(a.fecha)} · ${marco === "parana" ? f2(a.parana_sf) : f2(a.salado_recreo)} m`;
+  $("etqB").innerHTML = `<b>${b.titulo}</b>${fecha(b.fecha)} · ${marco === "parana" ? f2(b.parana_sf) : f2(b.salado_recreo)} m`;
+  for (const [e, id] of [[a, "datoA"], [b, "datoB"]]) {
+    const otro = marco === "parana" ? (e.salado_recreo != null ? `Salado en Recreo ese día: ${f2(e.salado_recreo)} m` : "")
+                                     : (e.parana_sf != null ? `Paraná en Santa Fe ese día: ${f2(e.parana_sf)} m` : "");
+    $(id).innerHTML = `<h3>${e.titulo}</h3><div class="fecha">${fecha(e.fecha)} · ${e.sensor}${e.nubes_pct > 15 ? ` · ${e.nubes_pct}% con nubes` : ""}</div>
+      <div class="num">${marco === "parana" ? f2(e.parana_sf) : f2(e.salado_recreo)} m <small>${marco === "parana" ? "Paraná en Santa Fe" : "Salado en Recreo"}</small></div>
+      <div class="num" style="font-size:22px">${e.agua_km2.toLocaleString("es-AR")} km² <small>de agua en el recuadro${e.nubes_pct > 15 ? " (sin contar lo tapado por nubes)" : ""}</small></div>
+      <p>${e.nota}</p>${otro ? `<p>${otro}</p>` : ""}<div class="cred">${e.credito}</div>`;
+  }
+}
+
+function grafico() {
+  const lista = E.filter(e => e.marco === marco && (marco === "parana" ? e.parana_sf : e.salado_recreo) != null);
+  const xs = lista.map(e => marco === "parana" ? e.parana_sf : e.salado_recreo), ys = lista.map(e => e.agua_km2);
+  const W = 800, H = 460, pl = 78, pr = 24, pt = 34, pb = 70;
+  const x0 = Math.min(0, ...xs), x1 = Math.max(...xs) + 0.5, y1 = Math.max(...ys) * 1.12;
+  const X = v => pl + (v - x0) / (x1 - x0) * (W - pl - pr), Y = v => H - pb - v / y1 * (H - pt - pb);
+  let s = "";
+  for (let m = Math.ceil(x0); m <= x1; m++) s += `<line x1="${X(m)}" x2="${X(m)}" y1="${pt}" y2="${H - pb}" stroke="rgba(255,255,255,.07)"/><text x="${X(m)}" y="${H - pb + 32}" fill="#9aa9b0" font-size="26" text-anchor="middle">${m}</text>`;
+  for (let k = 0; k <= y1; k += (y1 > 250 ? 100 : 50)) s += `<line x1="${pl}" x2="${W - pr}" y1="${Y(k)}" y2="${Y(k)}" stroke="rgba(255,255,255,.07)"/><text x="${pl - 8}" y="${Y(k) + 5}" fill="#9aa9b0" font-size="26" text-anchor="end">${k}</text>`;
+  const alerta = marco === "parana" ? 5.3 : 4.7;
+  s += `<line x1="${X(alerta)}" x2="${X(alerta)}" y1="${pt}" y2="${H - pb}" stroke="#ffd27a" stroke-dasharray="6 6" stroke-width="2"/><text x="${X(alerta) + 6}" y="${pt + 14}" fill="#ffd27a" font-size="24">alerta</text>`;
+  lista.forEach((e, i) => {
+    const anio = e.fecha.slice(0, 4);
+    const nublada = e.nubes_pct > 15;  // el agua tapada por nubes no se cuenta: punto hueco
+    s += `<circle cx="${X(xs[i])}" cy="${Y(ys[i])}" r="13" fill="${nublada ? "#070f14" : "#7fe0c4"}" stroke="${nublada ? "#7fe0c4" : "#070f14"}" stroke-width="4"/>
+      <text x="${X(xs[i])}" y="${Y(ys[i]) - 22}" fill="#f2f5f4" font-size="26" font-weight="800" text-anchor="${X(xs[i]) > W - 120 ? "end" : "middle"}">${e.id.endsWith("a") ? anio + " (antes)" : anio}${nublada ? " ☁" : ""}</text>`;
+  });
+  s += `<text x="${(W + pl) / 2}" y="${H - 8}" fill="#b7c4ca" font-size="24" text-anchor="middle">altura del río ese día (m)</text>
+        <text x="22" y="${(H - pb) / 2}" fill="#b7c4ca" font-size="24" text-anchor="middle" transform="rotate(-90 22 ${(H - pb) / 2})">km² de agua</text>`;
+  $("graf").innerHTML = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Altura del río y agua visible en cada imagen">${s}</svg>`;
+}
+
+// línea de comparación: arrastre con el dedo o el mouse, y el control deslizante
+const visor = $("visor");
+const poner = p => { p = Math.max(0, Math.min(100, p)); visor.style.setProperty("--corte", p + "%"); $("corte").value = p; };
+let arrastrando = false;
+const desdeEvento = ev => { const r = visor.getBoundingClientRect(); poner((ev.clientX - r.left) / r.width * 100); };
+visor.addEventListener("pointerdown", ev => { arrastrando = true; visor.setPointerCapture(ev.pointerId); desdeEvento(ev); });
+visor.addEventListener("pointermove", ev => { if (arrastrando) desdeEvento(ev); });
+visor.addEventListener("pointerup", () => arrastrando = false);
+visor.addEventListener("pointercancel", () => arrastrando = false);
+$("corte").addEventListener("input", ev => poner(+ev.target.value));
+$("verAgua").addEventListener("change", ev => visor.classList.toggle("con-agua", ev.target.checked));
+$("selA").addEventListener("change", mostrar);
+$("selB").addEventListener("change", mostrar);
+document.querySelectorAll(".tabs button").forEach(b => b.addEventListener("click", () => {
+  marco = b.dataset.marco;
+  document.querySelectorAll(".tabs button").forEach(x => x.setAttribute("aria-pressed", x === b));
+  opciones();
+}));
+poner(50);
+opciones();
+</script>
+</body>
+</html>

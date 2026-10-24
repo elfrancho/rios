@@ -67,7 +67,7 @@ def contador_portada():
     if n:  # número del panel, al día con la última actualización (cada hora)
         return f'<div id="visitas">👀 {n:,} visitas desde el {CONTADOR_DESDE}</div>'.replace(",", ".")
     # Suma página por página: el total del sitio (TOTAL.json) en GoatCounter se actualiza con mucha demora.
-    return ('<div id="visitas" hidden></div><script>Promise.all(["/rios", "/rios/ola.html", "/rios/parana.html", "/rios/salado.html"]'
+    return ('<div id="visitas" hidden></div><script>Promise.all(["/rios", "/rios/ola.html", "/rios/parana.html", "/rios/salado.html", "/rios/satelite.html"]'
             '.map(p => fetch("https://' + GOATCOUNTER + '.goatcounter.com/counter/" + encodeURIComponent(p) + ".json")'
             '.then(r => r.ok ? r.json() : { count: "0" }).then(j => +String(j.count).replace(/\\D/g, "")).catch(() => 0)))'
             '.then(v => { const n = v.reduce((a, b) => a + b, 0); if (!n) return; const e = document.getElementById("visitas");'
@@ -107,6 +107,11 @@ def armar():
     for origen, destino in [("rios.html", "parana.html"), ("salado.html", "salado.html"), ("ola.html", "ola.html")]:
         html = open(os.path.join(AQUI, origen), encoding="utf-8").read()
         open(os.path.join(WEB, destino), "w", encoding="utf-8").write(con_contador(html))
+    # crecidas desde el espacio: imágenes ya procesadas en la notebook (satelite/armar_imagenes.py); acá solo se copian
+    shutil.copytree(os.path.join(AQUI, "satelite", "img"), os.path.join(WEB, "satelite"))
+    escenas = [{k: v for k, v in e.items() if k != "escenas"} for e in json.load(open(os.path.join(AQUI, "satelite", "escenas.json"), encoding="utf-8"))]
+    html = open(os.path.join(AQUI, "plantilla_satelite.html"), encoding="utf-8").read().replace("/*ESCENAS*/", json.dumps(escenas, ensure_ascii=False))
+    open(os.path.join(WEB, "satelite.html"), "w", encoding="utf-8").write(con_contador(html))
     shutil.copy(os.path.join(AQUI, "og.png"), os.path.join(WEB, "og.png"))
     shutil.copy(os.path.join(AQUI, "perfil.jpg"), os.path.join(WEB, "perfil.jpg"))
     hoy = dt.datetime.now(ARG)

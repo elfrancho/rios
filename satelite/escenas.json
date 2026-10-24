@@ -1,0 +1,199 @@
+[
+ {
+  "id": "p1992",
+  "marco": "parana",
+  "titulo": "Crecida de 1992",
+  "fecha": "1992-06-27",
+  "nota": "5 días después del récord de Santa Fe: 7,43 m el 22/06/1992.",
+  "agua_km2": 366.7,
+  "nubes_pct": 0,
+  "parana_sf": 7.25,
+  "salado_recreo": null,
+  "sensor": "Landsat 5",
+  "credito": "Landsat: USGS/NASA",
+  "escenas": [
+   "LT05_L2SP_227082_19920627_02_T1"
+  ]
+ },
+ {
+  "id": "p1998",
+  "marco": "parana",
+  "titulo": "El Niño 1997-98",
+  "fecha": "1998-06-28",
+  "nota": "El pico fue de 7,26 m el 02/05/1998; no hay imagen sin nubes más cerca.",
+  "agua_km2": 244.5,
+  "nubes_pct": 1,
+  "parana_sf": 5.53,
+  "salado_recreo": 5.31,
+  "sensor": "Landsat 5",
+  "credito": "Landsat: USGS/NASA",
+  "escenas": [
+   "LT05_L2SP_227082_19980628_02_T1"
+  ]
+ },
+ {
+  "id": "p2010",
+  "marco": "parana",
+  "titulo": "Crecida de 2010",
+  "fecha": "2010-01-20",
+  "nota": "Pico de 6,02 m el 10/02/2010.",
+  "agua_km2": 156.4,
+  "nubes_pct": 1,
+  "parana_sf": 5.56,
+  "salado_recreo": 3.07,
+  "sensor": "Landsat 5",
+  "credito": "Landsat: USGS/NASA",
+  "escenas": [
+   "LT05_L2SP_227082_20100120_02_T1"
+  ]
+ },
+ {
+  "id": "p2016",
+  "marco": "parana",
+  "titulo": "Crecida de 2015-16",
+  "fecha": "2016-01-23",
+  "nota": "18 días después del pico: 6,60 m el 05/01/2016.",
+  "agua_km2": 257.9,
+  "nubes_pct": 6,
+  "parana_sf": 6.3,
+  "salado_recreo": 3.7,
+  "sensor": "Sentinel-2",
+  "credito": "Contiene datos modificados de Copernicus Sentinel",
+  "escenas": [
+   "S2A_MSIL2A_20160123T141102_R067_T20JQL_20210527T215328",
+   "S2A_MSIL2A_20160123T141102_R067_T20HQK_20210527T215324",
+   "S2A_MSIL2A_20160123T141102_R067_T20JPL_20210527T215334",
+   "S2A_MSIL2A_20160123T141102_R067_T20HPK_20210527T215325"
+  ]
+ },
+ {
+  "id": "p2022",
+  "marco": "parana",
+  "titulo": "Bajante de 2022",
+  "fecha": "2022-02-15",
+  "nota": "La bajante más larga en décadas: la Setúbal casi seca.",
+  "agua_km2": 41.2,
+  "nubes_pct": 0,
+  "parana_sf": -0.03,
+  "salado_recreo": -0.16,
+  "sensor": "Sentinel-2",
+  "credito": "Contiene datos modificados de Copernicus Sentinel",
+  "escenas": [
+   "S2B_MSIL2A_20220215T140049_R067_T20JQL_20220223T172729",
+   "S2B_MSIL2A_20220215T140049_R067_T20HQK_20220223T175450",
+   "S2B_MSIL2A_20220215T140049_R067_T20JPL_20220223T173108",
+   "S2B_MSIL2A_20220215T140049_R067_T20HPK_20220223T175708"
+  ]
+ },
+ {
+  "id": "p2023",
+  "marco": "parana",
+  "titulo": "Crecida de 2023",
+  "fecha": "2023-12-12",
+  "nota": "Pico de 5,45 m el 20/12/2023.",
+  "agua_km2": 86.8,
+  "nubes_pct": 0,
+  "parana_sf": 5.36,
+  "salado_recreo": 2.59,
+  "sensor": "Sentinel-2",
+  "credito": "Contiene datos modificados de Copernicus Sentinel",
+  "escenas": [
+   "S2A_MSIL2A_20231212T135701_R067_T20JQL_20231213T053531",
+   "S2A_MSIL2A_20231212T135701_R067_T20HQK_20241112T215803",
+   "S2A_MSIL2A_20231212T135701_R067_T20HQK_20231213T052156",
+   "S2A_MSIL2A_20231212T135701_R067_T20JPL_20241112T215803",
+   "S2A_MSIL2A_20231212T135701_R067_T20JPL_20231213T051846",
+   "S2A_MSIL2A_20231212T135701_R067_T20HPK_20231213T052024"
+  ]
+ },
+ {
+  "id": "p2026",
+  "marco": "parana",
+  "titulo": "Octubre de 2026",
+  "fecha": "2026-10-19",
+  "nota": "La crecida de este año.",
+  "agua_km2": 74.3,
+  "nubes_pct": 0,
+  "parana_sf": 3.74,
+  "salado_recreo": 2.09,
+  "sensor": "Sentinel-2",
+  "credito": "Contiene datos modificados de Copernicus Sentinel",
+  "escenas": [
+   "S2A_MSIL2A_20261019T140101_R067_T20JQL_20261019T203253",
+   "S2A_MSIL2A_20261019T140101_R067_T20HQK_20261019T203253",
+   "S2A_MSIL2A_20261019T140101_R067_T20JPL_20261019T203253",
+   "S2A_MSIL2A_20261019T140101_R067_T20HPK_20261019T203253"
+  ]
+ },
+ {
+  "id": "s2003a",
+  "marco": "salado",
+  "titulo": "Salado, abril de 2003",
+  "fecha": "2003-04-15",
+  "nota": "Dos semanas antes del pico: el Salado ya ocupaba su valle.",
+  "agua_km2": 95.2,
+  "nubes_pct": 7,
+  "parana_sf": 4.54,
+  "salado_recreo": 5.22,
+  "sensor": "Landsat 7",
+  "credito": "Landsat: USGS/NASA",
+  "escenas": [
+   "LE07_L2SP_227082_20030415_02_T1"
+  ]
+ },
+ {
+  "id": "s2003b",
+  "marco": "salado",
+  "titulo": "Salado, 1 de mayo de 2003",
+  "fecha": "2003-05-01",
+  "nota": "Un día después del pico (7,88 m en Recreo el 30/04/2003, el más alto desde 1980). Las manchas blancas son nubes.",
+  "agua_km2": 86.4,
+  "nubes_pct": 48,
+  "parana_sf": 5.29,
+  "salado_recreo": 7.78,
+  "sensor": "Landsat 7",
+  "credito": "Landsat: USGS/NASA",
+  "escenas": [
+   "LE07_L2SP_227082_20030501_02_T1"
+  ]
+ },
+ {
+  "id": "s2016",
+  "marco": "salado",
+  "titulo": "Salado, abril de 2016",
+  "fecha": "2016-04-22",
+  "nota": "Crecieron los dos ríos a la vez: el Salado tocó 6,79 m en Recreo el 13/04/2016.",
+  "agua_km2": 194.6,
+  "nubes_pct": 1,
+  "parana_sf": 6.04,
+  "salado_recreo": 6.5,
+  "sensor": "Sentinel-2",
+  "credito": "Contiene datos modificados de Copernicus Sentinel",
+  "escenas": [
+   "S2A_MSIL2A_20160422T141112_R067_T20JQL_20210211T053724",
+   "S2A_MSIL2A_20160422T141112_R067_T20JPL_20210211T053740",
+   "S2A_MSIL2A_20160422T141112_R067_T20JPL_20210211T053735",
+   "S2A_MSIL2A_20160422T141112_R067_T20HQK_20210211T053720",
+   "S2A_MSIL2A_20160422T141112_R067_T20HPK_20210211T053722"
+  ]
+ },
+ {
+  "id": "s2026",
+  "marco": "salado",
+  "titulo": "Salado, octubre de 2026",
+  "fecha": "2026-10-19",
+  "nota": "Hoy el Salado baja aguas arriba; en Santo Tomé lo frena el Paraná.",
+  "agua_km2": 39.2,
+  "nubes_pct": 0,
+  "parana_sf": 3.74,
+  "salado_recreo": 2.09,
+  "sensor": "Sentinel-2",
+  "credito": "Contiene datos modificados de Copernicus Sentinel",
+  "escenas": [
+   "S2A_MSIL2A_20261019T140101_R067_T20JQL_20261019T203253",
+   "S2A_MSIL2A_20261019T140101_R067_T20JPL_20261019T203253",
+   "S2A_MSIL2A_20261019T140101_R067_T20HQK_20261019T203253",
+   "S2A_MSIL2A_20261019T140101_R067_T20HPK_20261019T203253"
+  ]
+ }
+]
