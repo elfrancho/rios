@@ -1,6 +1,6 @@
 # Ríos Iguazú – Paraná · contenido para @elfrancho
 
-Estado al 19/10/2026, 13 h. Proyecto personal de Francisco. Todo corre en la notebook **SFE-NB-001**.
+Estado al 25/10/2026. Proyecto personal de Francisco. Todo corre en la notebook **SFE-NB-001**.
 
 ## Qué hay y dónde
 
@@ -9,6 +9,7 @@ Estado al 19/10/2026, 13 h. Proyecto personal de Francisco. Todo corre en la not
 | Tablero interactivo 1980-hoy (Iguazú, Andresito, Posadas, Corrientes, Santa Fe) | `rios.html` | `python bajar_ina.py datos_ina` y después `python armar.py` |
 | Tablero histórico del río Salado (Tostado, Recreo/Ruta 70 desde 1980, Laguna Setúbal, último año de 8 estaciones, Paraná en Santa Fe) | `salado.html` | `python bajar_salado.py` y después `python armar_salado.py` |
 | Simulación interactiva "La ola del Paraná" (mapa con barra de tiempo; crecida actual, 2023, 2014, 2013, 1992 y 1983; color según nivel de cada puerto) | `ola.html` | `python armar_ola.py` (después de actualizar datos_ina) |
+| **Las crecidas desde el espacio** (página web, 24/10/2026): cortina para comparar dos imágenes satelitales del mismo recuadro, con agua resaltada, altura del día y km² de agua. Paraná: 1992, 1998, 2010, 2016, bajante 2022, 2023 y hoy. Salado: abril y mayo de 2003, abril de 2016 y hoy. No hay Landsat de 1983 | `satelite.html` (web), `satelite\img\` y `satelite\escenas.json` (van al repo ya procesadas) | `python satelite\armar_imagenes.py [id ...]` SOLO en la notebook (rasterio); para sumar una crecida, agregar una fila a `EVENTOS` y correrlo; después `python publicar_web.py` |
 | Datos diarios del INA, y de la base nacional (SNIH) para completar huecos | `datos_ina\`, `datos\` | `bajar_ina.py`, `bajar_snih.py` |
 | Hallazgos del análisis histórico (récords, bajante, ciclo semanal de Itaipú, demoras) | `analisis_salida.txt`, `analisis2_salida.txt` | `analisis.py`, `analisis2.py` |
 | Carrusel 4:5 y 9 historias del 16/10 | `historias\png_carrusel\`, `historias\png\` | `historias\armar_historias.py` |
@@ -40,7 +41,7 @@ Antes eran 4 historias iguales todos los días y cansaban. Ahora son 2:
 
 ## Sitio público
 
-- **https://elfrancho.github.io/rios/** — portada con la ola, el Paraná desde 1980 y el Salado. Repo `elfrancho/rios` (cuenta personal de GitHub), carpeta local `web/`.
+- **https://elfrancho.github.io/rios/** — portada con las crecidas desde el espacio, la ola, el Paraná desde 1980 y el Salado. Repo `elfrancho/rios` (cuenta personal de GitHub), carpeta local `web/`.
 - **Desde el 20/10/2026 se actualiza sola cada hora en GitHub** (`.github/workflows/web.yml`), aunque la notebook esté apagada: baja INA y Salado, arma y publica; si una fuente falla, publica con los últimos datos del repo y commitea los datos nuevos. Esta carpeta `rios\` es el repo (las historias quedan afuera por `.gitignore`).
 - `python publicar_web.py` sube cambios de plantillas/scripts (y pide una actualización); `--local` arma `web\` para revisar sin publicar. El parte de las 13:00 lo sigue llamando al final.
 - Para tocar el workflow hace falta el permiso `workflow` en el token de elfrancho (ya otorgado el 20/10).
@@ -67,9 +68,13 @@ Antes eran 4 historias iguales todos los días y cansaban. Ahora son 2:
 
 ## Pendiente / ideas
 
-- **Martes 20/10:** el INA publica el pronóstico nuevo por puerto. Hacer una historia de actualización; el aviso de la noche avisa que salió.
-- **Miércoles 21/10:** informe semanal del INA.
-- Revisar las métricas de los dos reels desde su Instagram (ver la memoria de la asesoría de Instagram).
-- Quedaron sin mandar por mail: el reel de los 107 m corregido y la historia del chajá. Preguntarle si los quiere.
-- Ideas de curiosidades para reels: "cuánta agua es": 37.000 m³/s ≈ 15 piletas olímpicas por segundo; el río "tiene fin de semana" (Itaipú); la bajante 2020-22 fue más larga que la de 1944; antes y después con sus fotos.
-- Lecturas al 19/10 12 h: Corrientes 7,10 m (sobre evacuación), Goya 5,40, Reconquista 4,87, Santa Fe 3,77, Rosario 3,49, Puerto Iguazú 29,60 (bajando).
+- **Reels pedidos el 25/10/2026** (se arman con datos del día; si es domingo, los hidrómetros automáticos del SNIH en lugar de Prefectura):
+  1. **«¿Qué significa "nivel de evacuación"?»**, con imágenes satelitales (probar radar Sentinel-1 si hay nubes). Recorre los puertos de Puerto Iguazú a Rosario, cada uno con su marca. Arranca con la frase elegida: «Estoy cansado de los títulos que asustan. Yo no te vengo a asustar: te traigo los datos oficiales y te los explico.» Hay que decir que es la marca para evacuar las zonas más bajas, no toda la ciudad (frase oficial de la Municipalidad de Reconquista del 24/10).
+  2. **La costa de la Ruta 1** (de Rincón y Arroyo Leyes a Cayastá, Helvecia, Santa Rosa, San Javier y Reconquista): al este de la ruta, el sistema del Paraná (río San Javier, Setúbal); al oeste, el de los Saladillos. Lo pidió un seguidor. Falta confirmar las marcas de alerta y evacuación de San Javier (los diarios dicen 6 o 7 m) y qué estaciones hay en los Saladillos. Cayastá, Helvecia y Santa Rosa no tienen escala propia: aclararlo.
+     **Estaciones del SNIH con datos al 25/10** (automáticas y sin validar; códigos para `LeerUltimosRegistros`, `codigo` "1" = altura): del lado del Paraná, Romang 13331 (río San Javier, 6,64 → 7,05 m del 15 al 25/10), Cayastá 13226 (3,74 → 4,27), Leyes RP1 13225 (6,38 → 6,69) y Setúbal La Guardia 13339 (3,57 → 4,05); del lado de los Saladillos, Saladillo Dulce en La Noria RP281 13218 (0,90 → 0,76, último dato del 22/10) y Saladillo Amargo en Vera Mujica RP281 13200 (0,94 → 0,80). San Javier 13227, Helvecia 13204, Santa Rosa 13229, Saladero Cabal 13228, los dos de la RP39 (13230 y 13212) y San Justo 13325 no devolvieron datos recientes. Lista completa de estaciones: POST `Filtros.aspx/LeerEstaciones`. Cada escala tiene su propio cero: comparar subidas, no alturas. Falta bibliografía de la cuenca (laguna San Pedro, El Capón).
+
+- El INA tenía que publicar el pronóstico nuevo el 23/10 y al cierre de esa tarde no había salido. El próximo informe semanal sale el miércoles 28/10.
+- En el reel satelital, la frase "el Salado viene bajando" quedó general: en Santo Tomé sube porque lo frena el Paraná. En lo próximo, separar los tramos.
+- Metricool: pasar la zona horaria de la marca de Madrid a Argentina (lo tiene que hacer él o autorizarlo).
+- Ideas de reels: "cuánta agua es" (37.000 m³/s ≈ 15 piletas olímpicas por segundo); el río "tiene fin de semana" (Itaipú); la bajante 2020-22 fue más larga que la de 1944; crecidas de otros puertos (Corrientes, Rosario) desde el satélite; el radar (Sentinel-1) para días nublados.
+- Quedaron sin mandar: el reel de los 107 m corregido y la historia del chajá.
