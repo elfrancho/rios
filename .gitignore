@@ -11,3 +11,10 @@ rios.html
 salado.html
 ola.html
 datos_prefectura/*.bak-*
+
+# Página de la Setúbal (28/10/2026): queda solo en la notebook hasta que Francisco apruebe publicarla
+setubal/
+plantilla_setubal.html
+.claude/
+# mapa de nombres de ríos e islas: queda local hasta decidir si se publica (29/10/2026)
+mapa/
