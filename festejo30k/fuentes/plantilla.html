@@ -1,0 +1,228 @@
+<!doctype html>
+<!--
+  Reel «30 mil» · @elfrancho · 03/11/2026
+  Una isla del Paraná que nace grano a grano con la forma de «30.000»: la arena se asienta (el agua se frena),
+  bajan las aguas y aparece la playa, entran las plantas desde la orilla, florecen los ceibos, flotan camalotes,
+  pasa una garza blanca y un carpincho deja sus huellas. El contador de «granos de arena» llega a 30.000 y,
+  cuando la voz dice «Hoy somos treinta mil», pasa a decir «seguidores».
+  Va sin audio (la música la pone Francisco en Instagram). Esta plantilla la completa ../armar.py (geometría, tiempos y textos) -> index.html. No se edita index.html.
+-->
+<html lang="es" data-resolution="portrait">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@500;700&display=swap" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { margin: 0; width: 1080px; height: 1920px; overflow: hidden; background: #5c4129; }
+      #root { position: relative; width: 1080px; height: 1920px; overflow: hidden; font-family: "Barlow", sans-serif; color: #fff; }
+      .clip { position: absolute; inset: 0; }
+      #escena { transform-origin: 50% 52%; }
+      #escena canvas, #escena img { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
+      #playa, #mojado { opacity: 0; }
+      .cartel { inset: auto; position: absolute; left: 0; right: 0; text-align: center; font-family: "Barlow Condensed", sans-serif;
+        text-shadow: 0 4px 18px #000a, 0 2px 4px #000c; }
+      #titulo { top: 230px; font-weight: 800; font-size: 96px; line-height: 1; opacity: 0; }
+      #contador { top: 190px; opacity: 0; }
+      #contador .n { font-weight: 800; font-size: 150px; line-height: 1; color: #f3dfb4; }
+      #contador .l { position: relative; height: 64px; margin-top: 4px; }
+      #contador .l span { position: absolute; left: 0; right: 0; font-weight: 700; font-size: 56px; letter-spacing: 3px; text-transform: uppercase; }
+      #lSeg { opacity: 0; color: #9be07a; }
+      #gracias { top: 1400px; opacity: 0; }
+      #gracias .g { font-weight: 800; font-size: 92px; line-height: 1.02; padding: 0 50px; }
+      #gracias .a { margin-top: 26px; font-family: "Barlow", sans-serif; font-weight: 700; font-size: 54px; color: #f3dfb4; }
+      .sub { inset: auto; position: absolute; left: 60px; right: 60px; bottom: 300px; text-align: center; font-weight: 700; font-size: 58px;
+        line-height: 1.25; }
+      .sub span { background: #000b; padding: 4px 18px; border-radius: 12px; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="TOTAL_S" data-width="1080" data-height="1920">
+      <div id="escena" class="clip" data-start="0" data-duration="TOTAL_S" data-track-index="0">
+        <canvas id="agua" width="1080" height="1920"></canvas>
+        <img id="mojado" src="assets/mojado.png" alt="" />
+        <img id="playa" src="assets/playa.png" alt="" />
+        <canvas id="isla" width="1080" height="1920"></canvas>
+      </div>
+
+      <div id="titulo" class="cartel clip" data-start="0" data-duration="TOTAL_S" data-track-index="3">¿Cómo nace una isla?</div>
+      <div id="contador" class="cartel clip" data-start="0" data-duration="TOTAL_S" data-track-index="4">
+        <div class="n" id="num">0</div>
+        <div class="l"><span id="lGranos">granos de arena</span><span id="lSeg">seguidores</span></div>
+      </div>
+      <div id="gracias" class="cartel clip" data-start="GRACIAS_S" data-duration="GRACIAS_D" data-track-index="5">
+        <div class="g">Gracias por ser parte de esta isla</div>
+        <div class="a">@elfrancho</div>
+      </div>
+
+<!--SUBS-->
+
+    </div>
+
+    <script>
+      const D = /*DATOS*/null;
+      const T = D.t;
+      const agua = document.getElementById("agua").getContext("2d");
+      const isla = document.getElementById("isla").getContext("2d");
+      const numEl = document.getElementById("num");
+
+      // azar con semilla (todo determinista)
+      let s = 30000;
+      const azar = () => { s |= 0; s = s + 0x6D2B79F5 | 0; let t = Math.imul(s ^ s >>> 15, 1 | s); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+      const lim = (x) => Math.max(0, Math.min(1, x));
+      const suave = (x) => { x = lim(x); return x * x * (3 - 2 * x); };
+      const mezcla = (a, b, k) => a.map((v, i) => Math.round(v + (b[i] - v) * k));
+      const hex = (h) => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
+      const rgb = (c, a = 1) => `rgba(${c[0]},${c[1]},${c[2]},${a})`;
+      const miles = (n) => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+
+      // el agua: vetas que corren hacia abajo y limos finos que pasan de largo
+      const vetas = Array.from({ length: 90 }, () => ({ x: azar() * 1080, y: azar() * 2200, v: 50 + azar() * 90, l: 70 + azar() * 180, w: 2 + azar() * 4, a: 0.04 + azar() * 0.08, f: azar() * 6 }));
+      const finos = Array.from({ length: 240 }, () => ({ x: azar() * 1080, y: azar() * 2100, v: 110 + azar() * 120, r: 1.4 + azar() * 1.4, f: azar() * 6 }));
+
+      // granos de arena: se asientan de abajo hacia arriba; las plantas entran desde la orilla
+      const ARENAS = ["#e6c890", "#dcbb80", "#efd5a2", "#d3b078"].map(hex);
+      const VERDES = ["#3d7a2c", "#4f8f36", "#2f6624", "#5e9e3f"].map(hex);
+      const VIAJE = 1.8;
+      const alto = D.abajo - D.arriba;
+      const granos = D.granos.map(([x, y, borde, r, c]) => {
+        const orden = 0.62 * (1 - (y - D.arriba) / alto) + 0.38 * r;
+        return { x, y, c, r, llega: T.llegaIni + (T.llegaFin - T.llegaIni) * orden,
+          sx: x + (azar() - 0.5) * 300, sy: -80 - azar() * 260, verde: T.plantas + 0.15 + 2.3 * borde + 0.4 * r };
+      });
+      granos.sort((a, b) => a.llega - b.llega);
+      const N = granos.length;
+
+      function huella(x, y, dedos, a) {
+        isla.save(); isla.translate(x, y); isla.fillStyle = rgb([96, 68, 40], 0.8 * a);
+        isla.beginPath(); isla.ellipse(0, 0, 6.5, 7.5, 0, 0, 7); isla.fill();
+        const ang = dedos === 4 ? [-0.75, -0.25, 0.25, 0.75] : [-0.6, 0, 0.6];
+        ang.forEach(g => { isla.beginPath(); isla.ellipse(Math.cos(g) * 12, Math.sin(g) * 12, 3.4, 2.6, g, 0, 7); isla.fill(); });
+        isla.restore();
+      }
+
+      function garza(x, y, ang, f, sombra) {
+        const c = isla;
+        c.save(); c.translate(x, y); c.rotate(ang); c.scale(2.2, 2.2);
+        const blanco = sombra ? "rgba(30,20,10,.28)" : "#f8f7f1";
+        if (!sombra) { c.strokeStyle = "#1d1d1d"; c.lineWidth = 2.6; c.beginPath(); c.moveTo(-18, -3); c.lineTo(-74, -6); c.moveTo(-18, 3); c.lineTo(-74, 6); c.stroke(); }
+        c.fillStyle = blanco;
+        [-1, 1].forEach(lado => {
+          c.beginPath(); c.moveTo(10, 0);
+          c.quadraticCurveTo(12, lado * 62 * f, -6, lado * 118 * f);
+          c.quadraticCurveTo(-24, lado * 70 * f, -20, lado * 4);
+          c.closePath(); c.fill();
+        });
+        c.beginPath(); c.ellipse(0, 0, 30, 9, 0, 0, 7); c.fill();
+        c.beginPath(); c.ellipse(31, 0, 10, 6, 0, 0, 7); c.fill();
+        if (!sombra) { c.strokeStyle = "#e7b416"; c.lineWidth = 3; c.beginPath(); c.moveTo(40, 0); c.lineTo(64, 0); c.stroke(); }
+        c.restore();
+      }
+
+      function dibujar(t) {
+        // agua del Paraná
+        const g = agua.createLinearGradient(0, 0, 0, 1920);
+        g.addColorStop(0, "#7d5b39"); g.addColorStop(1, "#5f4328");
+        agua.fillStyle = g; agua.fillRect(0, 0, 1080, 1920);
+        agua.lineCap = "round";
+        vetas.forEach(v => {
+          const y = (v.y + v.v * t) % 2200 - 140, x = v.x + Math.sin(t * 0.6 + v.f) * 14;
+          agua.strokeStyle = `rgba(214,178,128,${v.a})`; agua.lineWidth = v.w;
+          agua.beginPath(); agua.moveTo(x, y); agua.lineTo(x + Math.sin(v.f) * 10, y + v.l); agua.stroke();
+        });
+        finos.forEach(p => {
+          const y = (p.y + p.v * t) % 2100 - 90, x = p.x + Math.sin(t * 0.9 + p.f) * 20;
+          agua.fillStyle = "rgba(240,214,168,.33)"; agua.beginPath(); agua.arc(x, y, p.r, 0, 7); agua.fill();
+        });
+
+        isla.clearRect(0, 0, 1080, 1920);
+        // camalotes flotando
+        D.camalotes.forEach(([x0, y0, f], k) => {
+          const a = suave((t - T.plantas - k * 0.12) / 0.8);
+          if (a <= 0) return;
+          const x = x0 + Math.sin(t * 0.5 + f) * 8, y = y0 + 14 * (t - T.plantas);
+          isla.globalAlpha = a;
+          isla.save(); isla.translate(x, y); isla.scale(1.7, 1.7); isla.translate(-x, -y);
+          for (let h = 0; h < 4; h++) { const b = f + h * 1.57; isla.fillStyle = h % 2 ? "#5aa43f" : "#4a9334"; isla.beginPath(); isla.arc(x + Math.cos(b) * 9, y + Math.sin(b) * 9, 9, 0, 7); isla.fill(); }
+          isla.fillStyle = "#c3a8f2"; [[0, -2], [5, -6], [-4, 3], [3, 4]].forEach(([dx, dy]) => { isla.beginPath(); isla.arc(x + dx, y + dy, 4.6, 0, 7); isla.fill(); });
+          isla.fillStyle = "#f2d84a"; isla.beginPath(); isla.arc(x + 1, y - 1, 1.8, 0, 7); isla.fill();
+          isla.restore(); isla.globalAlpha = 1;
+        });
+
+        // granos
+        let asentados = 0;
+        for (const p of granos) {
+          const avance = (t - (p.llega - VIAJE)) / VIAJE;
+          if (avance <= 0) continue;
+          let x = p.x, y = p.y, r = 6.6;
+          if (avance < 1) {
+            const e = 1 - Math.pow(1 - avance, 3);
+            x = p.sx + (p.x - p.sx) * e + Math.sin(avance * 6.3 + p.r * 6) * 18 * (1 - e);
+            y = p.sy + (p.y - p.sy) * e;
+            r = 3.6 + 3 * suave((avance - 0.85) / 0.15);
+          } else asentados++;
+          const k = suave((t - p.verde) / 0.6);
+          isla.fillStyle = rgb(k > 0 ? mezcla(ARENAS[p.c], VERDES[p.c], k) : ARENAS[p.c]);
+          isla.beginPath(); isla.arc(x, y, r, 0, 7); isla.fill();
+        }
+        numEl.textContent = miles(asentados >= N ? 30000 : Math.round(30000 * asentados / N));
+
+        // ceibos en flor
+        D.ceibos.forEach(([x, y], k) => {
+          const e = lim((t - T.vida - k * 0.06) / 0.45);
+          if (e <= 0) return;
+          const sc = 1 + 2.2 * Math.pow(e - 1, 3) + 1.2 * Math.pow(e - 1, 2);   // back.out
+          isla.save(); isla.translate(x, y); isla.scale(sc, sc);
+          isla.fillStyle = "#2c5e22"; isla.beginPath(); isla.arc(0, 0, 11, 0, 7); isla.fill();
+          isla.fillStyle = "#d7263d";
+          for (let h = 0; h < 5; h++) { const b = h * 1.2566 + k; isla.beginPath(); isla.arc(Math.cos(b) * 6, Math.sin(b) * 6, 3.3, 0, 7); isla.fill(); }
+          isla.fillStyle = "#f04e5e"; isla.beginPath(); isla.arc(0, 0, 3, 0, 7); isla.fill();
+          isla.restore();
+        });
+
+        // huellas de carpincho por la playa
+        const nh = D.huellas.length;
+        D.huellas.forEach(([x, y, dedos], k) => {
+          const a = suave((t - (T.b3 + 0.8 + k * 4.4 / nh)) / 0.3);
+          if (a > 0) huella(x, y, dedos, a);
+        });
+
+        // garza blanca que cruza
+        const v = (t - T.b3 + 0.3) / 5.6;
+        if (v > 0 && v < 1) {
+          const x0 = -300, y0 = 520, x1 = 1400, y1 = 1450;
+          const x = x0 + (x1 - x0) * v, y = y0 + (y1 - y0) * v + Math.sin(v * 3.14) * -60;
+          const ang = Math.atan2(y1 - y0, x1 - x0) - 0.1;
+          const f = 0.62 + 0.38 * Math.cos(t * 2 * Math.PI * 1.0);
+          garza(x + 120, y + 100, ang, f * 0.95, true);
+          garza(x, y, ang, f, false);
+        }
+      }
+
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+      const reloj = { t: 0 };
+      dibujar(0);
+      tl.to(reloj, { t: TOTAL_S, duration: TOTAL_S, ease: "none", onUpdate: () => dibujar(reloj.t) }, 0);
+      tl.fromTo("#escena", { scale: 1 }, { scale: 1.07, duration: TOTAL_S, ease: "none" }, 0);
+
+      tl.fromTo("#titulo", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" }, 0.2);
+      tl.to("#titulo", { opacity: 0, duration: 0.4 }, T.contador - 0.45);
+      tl.fromTo("#contador", { opacity: 0 }, { opacity: 1, duration: 0.5 }, T.contador);
+
+      tl.to("#mojado", { opacity: 1, duration: 1.2, ease: "sine.out" }, T.plantas - 0.7);
+      tl.to("#playa", { opacity: 1, duration: 1.0, ease: "sine.out" }, T.plantas - 0.5);
+
+      tl.to("#lGranos", { opacity: 0, y: -24, duration: 0.4 }, T.somos);
+      tl.fromTo("#lSeg", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.4 }, T.somos + 0.1);
+      tl.to("#contador", { scale: 1.14, duration: 0.35, ease: "power2.out" }, T.somos);
+      tl.to("#contador", { scale: 1, duration: 0.6, ease: "power2.inOut" }, T.somos + 0.35);
+      tl.to("#num", { color: "#ffd84d", duration: 0.4 }, T.somos);
+
+      tl.fromTo("#gracias", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.7, ease: "power2.out" }, T.gracias);
+
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>
