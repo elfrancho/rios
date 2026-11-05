@@ -18,3 +18,6 @@ plantilla_setubal.html
 .claude/
 # mapa de nombres de ríos e islas: queda local hasta decidir si se publica (29/10/2026)
 mapa/
+
+# Fuentes de investigación (PDF de terceros + CLAUDE.md con datos personales): solo local (04/11/2026)
+fuentes/
