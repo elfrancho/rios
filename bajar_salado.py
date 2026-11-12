@@ -34,7 +34,7 @@ def snih(codigo, desde=1980):
 
 
 def cim(i):
-    t = urllib.request.urlopen(urllib.request.Request(f"https://fich.unl.edu.ar/cim/rios/historico/{i}", headers=UA), timeout=120).read().decode("utf-8", "replace")
+    t = urllib.request.urlopen(urllib.request.Request(f"https://cim.fich.unl.edu.ar/rios/{i}/historico", headers=UA), timeout=120).read().decode("utf-8", "replace")
     out = defaultdict(list)
     for fila in re.findall(r"<tr.*?</tr>", t, re.S):
         c = [re.sub(r"\s+", " ", html.unescape(re.sub(r"<[^>]+>", " ", x))).strip() for x in re.findall(r"<td.*?</td>", fila, re.S)]
