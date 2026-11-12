@@ -112,6 +112,9 @@ def armar():
     escenas = [{k: v for k, v in e.items() if k != "escenas"} for e in json.load(open(os.path.join(AQUI, "satelite", "escenas.json"), encoding="utf-8"))]
     html = open(os.path.join(AQUI, "plantilla_satelite.html"), encoding="utf-8").read().replace("/*ESCENAS*/", json.dumps(escenas, ensure_ascii=False))
     open(os.path.join(WEB, "satelite.html"), "w", encoding="utf-8").write(con_contador(html))
+    # historias del día para Instagram: Metricool las toma de un link público (12/11/2026). Solo la tanda más nueva.
+    if os.path.isdir(os.path.join(AQUI, "ig")):
+        shutil.copytree(os.path.join(AQUI, "ig"), os.path.join(WEB, "ig"))
     shutil.copy(os.path.join(AQUI, "og.png"), os.path.join(WEB, "og.png"))
     shutil.copy(os.path.join(AQUI, "perfil.jpg"), os.path.join(WEB, "perfil.jpg"))
     hoy = dt.datetime.now(ARG)
