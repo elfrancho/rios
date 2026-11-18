@@ -21,3 +21,6 @@ mapa/
 
 # Fuentes de investigación (PDF de terceros + CLAUDE.md con datos personales): solo local (04/11/2026)
 fuentes/
+
+# Series satelitales de zonas marcadas (18/11/2026): las imagenes quedan solo en la notebook
+zonas/*/
