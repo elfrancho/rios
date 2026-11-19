@@ -1,1 +1,683 @@
-<html>/*DATOS*/null</html>
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Zona desde el satélite</title>
+<style>
+  :root { --fondo: #0e1418; --panel: #151d23; --panel2: #1c272e; --borde: #2a3840; --texto: #e8eef1; --tenue: #9aabb4; --acento: #4fd8ff; --acentoTxt: #06222c;
+          --baja: #e0a84a; --media: #8fb8c9; --alta: #5aa2ff; --fijada: #ffb347; --marco: #ff4fd8; }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; overflow: hidden; }
+  body { background: var(--fondo); color: var(--texto); font: 15px/1.45 system-ui, "Segoe UI", Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
+  button { font: inherit; color: inherit; cursor: pointer; }
+  button:focus-visible, a:focus-visible, #tl:focus-visible { outline: 2px solid var(--acento); outline-offset: 2px; }
+  [hidden] { display: none !important; }
+
+  #app { height: 100vh; height: 100dvh; display: grid; grid-template-columns: 290px minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr); }
+  #cab { grid-column: 1 / 3; display: flex; align-items: center; gap: 12px; padding: 8px 14px; border-bottom: 1px solid var(--borde); background: var(--panel); }
+  #cab h1 { font-size: 16px; margin: 0; white-space: nowrap; }
+  #sub { color: var(--tenue); font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .marca { display: flex; align-items: baseline; gap: 12px; min-width: 0; flex: 1; }
+  .cabder { display: flex; gap: 4px; align-items: center; flex: none; }
+  .lnk { background: none; border: 0; color: var(--acento); padding: 6px 8px; border-radius: 6px; font-size: 14px; text-decoration: none; white-space: nowrap; }
+  .lnk:hover { background: var(--panel2); }
+
+  /* --- panel de fechas --- */
+  #panel { display: flex; flex-direction: column; min-height: 0; border-right: 1px solid var(--borde); background: var(--panel); }
+  .panelcab { display: flex; align-items: center; gap: 8px; padding: 10px 12px 6px; }
+  .panelcab strong { font-size: 14px; }
+  #cuenta { color: var(--tenue); font-size: 12.5px; flex: 1; }
+  .filtros { display: flex; flex-wrap: wrap; gap: 6px; padding: 4px 12px 6px; }
+  .filtros:last-of-type { padding-bottom: 10px; border-bottom: 1px solid var(--borde); }
+  .chipf { display: inline-flex; align-items: center; gap: 6px; background: none; border: 1px solid var(--borde); border-radius: 999px; padding: 3px 10px; font-size: 12.5px; color: var(--tenue); }
+  .chipf:hover { border-color: var(--tenue); }
+  .chipf[aria-pressed="true"] { background: var(--panel2); border-color: var(--acento); color: var(--texto); }
+  .punto { width: 9px; height: 9px; border-radius: 50%; flex: none; display: inline-block; }
+  #lista { overflow-y: auto; flex: 1; min-height: 0; overscroll-behavior: contain; }
+  #lista .anio { padding: 5px 12px; font-size: 11.5px; letter-spacing: .08em; color: var(--tenue); background: #10181d; position: sticky; top: 0; z-index: 1; }
+  .it { display: grid; grid-template-columns: auto 1fr auto; gap: 1px 8px; align-items: center; width: 100%; text-align: left; padding: 7px 12px 7px 9px; border: 0;
+        border-bottom: 1px solid #202c33; border-left: 3px solid transparent; background: none; }
+  .it:hover { background: #1b262d; }
+  .it.activa { background: #22323b; border-left-color: var(--acento); }
+  .it.fijada { box-shadow: inset -4px 0 0 var(--fijada); }
+  .it .f { font-variant-numeric: tabular-nums; }
+  .it small { grid-column: 2 / 4; color: var(--tenue); font-size: 12px; }
+  .et { font-size: 11.5px; padding: 1px 7px; border-radius: 9px; color: #0e1418; font-weight: 600; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .et.baja { background: var(--baja); } .et.media { background: var(--media); } .et.alta { background: var(--alta); } .et.nd { background: #55656e; color: #e8eef1; }
+  #vacio { padding: 16px 12px; color: var(--tenue); font-size: 13px; }
+
+  /* --- principal --- */
+  main { display: grid; grid-template-rows: auto auto minmax(0, 1fr) auto; min-width: 0; min-height: 0; }
+  #info { display: flex; align-items: center; gap: 12px; padding: 8px 14px 4px; }
+  .infoizq { flex: 1; min-width: 0; }
+  #fecha { font-size: 21px; font-weight: 700; line-height: 1.2; }
+  #chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+  .chip { display: inline-flex; align-items: center; gap: 6px; background: var(--panel2); border-radius: 999px; padding: 2px 10px; font-size: 12.5px; color: var(--texto); white-space: nowrap; }
+  .chip.ten { background: none; color: var(--tenue); padding-left: 0; }
+  .chip.avi { background: #4a3a17; color: #ffd98a; }
+  .nav { display: flex; align-items: center; gap: 6px; flex: none; }
+  #pos { color: var(--tenue); font-size: 12.5px; font-variant-numeric: tabular-nums; min-width: 52px; text-align: center; }
+  .btn { background: var(--panel2); border: 1px solid var(--borde); border-radius: 8px; padding: 6px 11px; white-space: nowrap; user-select: none; }
+  .btn:hover:not(:disabled) { border-color: var(--acento); }
+  .btn:disabled { opacity: .4; cursor: default; }
+  .btn[aria-pressed="true"] { background: var(--acento); color: var(--acentoTxt); border-color: var(--acento); font-weight: 600; }
+  #herr { display: flex; align-items: center; gap: 8px; padding: 4px 14px 8px; overflow-x: auto; scrollbar-width: none; }
+  #herr::-webkit-scrollbar { display: none; }
+  .grupo { display: flex; border: 1px solid var(--borde); border-radius: 8px; overflow: hidden; flex: none; }
+  .grupo .btn { border: 0; border-radius: 0; border-right: 1px solid var(--borde); }
+  .grupo .btn:last-child { border-right: 0; }
+  .sep { flex: 1; }
+
+  /* --- imagen --- */
+  #escena { position: relative; overflow: hidden; background: #000; cursor: grab; touch-action: none; min-height: 0; border-top: 1px solid var(--borde); border-bottom: 1px solid var(--borde); }
+  #escena.arrastra { cursor: grabbing; }
+  #escena.mide { cursor: crosshair; }
+  #lienzo { position: absolute; left: 0; top: 0; transform-origin: 0 0; will-change: transform; }
+  #lienzo img { display: block; max-width: none; user-select: none; -webkit-user-drag: none; pointer-events: none; }
+  #lienzo.pixel img { image-rendering: pixelated; }
+  #fondo { position: absolute; filter: brightness(.78) saturate(.85); }
+  .capa { overflow: hidden; }
+  #capaA { position: relative; }
+  #capaB { position: absolute; left: 0; top: 0; }
+  #lienzo.confondo #marco { position: absolute; left: 0; top: 0; outline: 3px solid var(--marco); pointer-events: none; }
+  .tes { position: absolute; left: 0; top: 0; overflow: hidden; }
+  .mos { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
+  .mos img { position: absolute; width: 256.6px; height: 256.6px; }
+  #lienzo svg { position: absolute; left: 0; top: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
+  .sobre { position: absolute; background: rgba(8, 13, 16, .72); border-radius: 6px; font-size: 12px; padding: 4px 8px; pointer-events: none; }
+  #escala { left: 10px; bottom: 10px; }
+  #escala i { display: block; height: 4px; background: #fff; margin-top: 3px; border-radius: 2px; }
+  #coords { left: 10px; bottom: 50px; font-variant-numeric: tabular-nums; }
+  #credito { right: 10px; bottom: 10px; font-size: 11.5px; max-width: calc(100% - 150px); text-align: right; }
+  #cargando { left: 50%; top: 12px; transform: translateX(-50%); display: flex; align-items: center; gap: 8px; font-size: 13px; }
+  #cargando::before { content: ""; width: 14px; height: 14px; border: 2px solid #ffffff55; border-top-color: #fff; border-radius: 50%; animation: gira .8s linear infinite; }
+  @keyframes gira { to { transform: rotate(360deg); } }
+  #aviso { left: 50%; top: 50%; transform: translate(-50%, -50%); background: rgba(60, 20, 20, .92); font-size: 14px; max-width: 80%; text-align: center; padding: 10px 14px; }
+  .flot { position: absolute; right: 10px; top: 10px; display: flex; flex-direction: column; gap: 6px; }
+  .flot .ic { width: 40px; height: 40px; border-radius: 8px; border: 1px solid #ffffff2e; background: rgba(8, 13, 16, .78); font-size: 20px; line-height: 1; display: grid; place-items: center; }
+  .flot .ic:hover { border-color: var(--acento); }
+  .flot .ic.txt { font-size: 10.5px; font-weight: 600; letter-spacing: .02em; }
+  /* comparación con cortina */
+  #divisor { position: absolute; top: 0; bottom: 0; width: 44px; margin-left: -22px; cursor: ew-resize; touch-action: none; display: grid; place-items: center; }
+  #divisor::before { content: ""; position: absolute; top: 0; bottom: 0; left: 21px; width: 2px; background: #fff; box-shadow: 0 0 0 1px #0008; }
+  #divisor i { position: relative; width: 34px; height: 34px; border-radius: 50%; background: #fff; color: #0e1418; display: grid; place-items: center; font-style: normal; font-size: 15px; box-shadow: 0 1px 6px #000a; }
+  .lado { top: 10px; font-size: 12.5px; pointer-events: none; max-width: 42%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  #ladoB { border-left: 3px solid var(--fijada); } #ladoA { border-right: 3px solid var(--acento); }
+  #cmpbar, #medPanel { position: absolute; left: 50%; bottom: 46px; transform: translateX(-50%); background: rgba(8, 13, 16, .9); border: 1px solid var(--borde); border-radius: 10px;
+        padding: 6px 8px; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 6px; font-size: 13px; max-width: calc(100% - 20px); cursor: default; }
+  #cmpbar .btn, #medPanel .btn { padding: 4px 9px; font-size: 13px; }
+  #medTxt { padding: 0 4px; font-variant-numeric: tabular-nums; }
+  #medTxt b { color: #ffe24a; }
+
+  /* --- línea de tiempo --- */
+  #linea { height: 78px; padding: 0 6px; background: var(--panel); }
+  #tl { width: 100%; height: 100%; display: block; cursor: pointer; touch-action: none; }
+  #tl text { font: 10.5px system-ui, sans-serif; fill: var(--tenue); }
+
+  /* --- ventanas --- */
+  dialog { background: var(--panel); color: var(--texto); border: 1px solid var(--borde); border-radius: 12px; padding: 0; max-width: min(680px, calc(100vw - 24px)); max-height: calc(100dvh - 24px); }
+  dialog::backdrop { background: rgba(0, 0, 0, .6); }
+  .dcab { display: flex; align-items: center; padding: 12px 14px; border-bottom: 1px solid var(--borde); position: sticky; top: 0; background: var(--panel); }
+  .dcab h2 { margin: 0; font-size: 16px; flex: 1; }
+  .dcuerpo { padding: 12px 16px 16px; font-size: 14px; }
+  .dcuerpo h3 { font-size: 13.5px; margin: 14px 0 6px; color: var(--acento); }
+  .dcuerpo h3:first-child { margin-top: 0; }
+  .dcuerpo p { margin: 6px 0; color: #cfd9de; }
+  .dcuerpo table { border-collapse: collapse; width: 100%; }
+  .dcuerpo td { padding: 4px 8px 4px 0; vertical-align: top; border-bottom: 1px solid #202c33; }
+  .dcuerpo td:first-child { white-space: nowrap; width: 1%; }
+  kbd { background: #24343e; border-radius: 4px; padding: 1px 6px; font: 12px ui-monospace, monospace; color: var(--texto); border-bottom: 2px solid #121a1f; }
+  .x { background: none; border: 0; font-size: 18px; width: 36px; height: 36px; border-radius: 8px; }
+  .x:hover { background: var(--panel2); }
+  .ley { display: flex; flex-wrap: wrap; gap: 8px 14px; margin: 6px 0; }
+  .ley span { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; }
+
+  .soloMovil { display: none; }
+  /* --- celular: todo en una pantalla, sin desplazar la página; las fechas se abren como hoja inferior --- */
+  @media (max-width: 760px) {
+    .soloMovil { display: revert; }
+    .soloPC { display: none !important; }
+    #app { display: flex; flex-direction: column; }
+    #cab { padding: 6px 10px; gap: 6px; }
+    #cab h1 { font-size: 14px; }
+    #sub { display: none; }
+    .lnk { padding: 8px 6px; font-size: 13px; }
+    main { flex: 1; display: flex; flex-direction: column; }
+    #info { padding: 6px 10px 4px; gap: 8px; }
+    #fecha { font-size: 17px; }
+    .chip { font-size: 12px; }
+    .nav .btn { width: 44px; height: 44px; padding: 0; font-size: 17px; }
+    .nav .btn span, #pos { display: none; }
+    #escena { flex: 1; }
+    #linea { height: 56px; padding: 0 2px; }
+    #herr { order: 5; padding: 6px 8px calc(6px + env(safe-area-inset-bottom)); gap: 6px; background: var(--panel); border-top: 1px solid var(--borde); }
+    #herr .btn { min-height: 44px; padding: 6px 12px; flex: none; }
+    .sep { display: none; }
+    .flot .ic { width: 44px; height: 44px; }
+    #coords { display: none; }
+    #escena.mide #coords { display: block; }
+    #credito { font-size: 10.5px; max-width: 58%; }
+    #cmpbar, #medPanel { left: 8px; right: 8px; transform: none; max-width: none; bottom: 44px; }
+    #capasGrupo { display: none; position: fixed; left: 8px; bottom: calc(68px + env(safe-area-inset-bottom)); z-index: 20; flex-direction: column; min-width: 210px; background: var(--panel); box-shadow: 0 6px 24px #000c; }
+    #capasGrupo.abierto { display: flex; }
+    #capasGrupo .btn { border-right: 0; border-bottom: 1px solid var(--borde); text-align: left; padding: 12px 14px; }
+    #capasGrupo .btn:last-child { border-bottom: 0; }
+    #capasGrupo .btn[aria-pressed="true"]::after { content: "  ✓"; }
+    #panel { position: fixed; z-index: 30; left: 0; right: 0; bottom: 0; top: 12dvh; border-right: 0; border-top: 1px solid var(--borde); border-radius: 14px 14px 0 0;
+             transform: translateY(105%); transition: transform .22s ease; box-shadow: 0 -8px 30px #000a; padding-bottom: env(safe-area-inset-bottom); }
+    #panel.abierto { transform: none; }
+    #velo { position: fixed; inset: 0; z-index: 29; background: rgba(0, 0, 0, .55); }
+    .it { padding: 10px 12px 10px 9px; }
+    .chipf { padding: 7px 12px; font-size: 13px; }
+  }
+  @media (prefers-reduced-motion: reduce) { #panel { transition: none; } #cargando::before { animation: none; } }
+</style>
+</head>
+<body>
+<div id="app">
+  <header id="cab">
+    <div class="marca"><h1 id="titulo"></h1><span id="sub"></span></div>
+    <div class="cabder"><!--ENLACE--><button class="lnk" id="bFuentes">Fuentes</button><button class="lnk" id="bAyuda">Ayuda</button></div>
+  </header>
+
+  <aside id="panel" aria-label="Fechas disponibles">
+    <div class="panelcab"><strong>Fechas</strong><span id="cuenta"></span><button class="x soloMovil" id="cerrarPanel" aria-label="Cerrar la lista de fechas">✕</button></div>
+    <div class="filtros" id="fFuente" role="group" aria-label="Filtrar por fuente"></div>
+    <div class="filtros" id="fAgua" role="group" aria-label="Filtrar por altura del río"></div>
+    <div id="lista"></div>
+  </aside>
+  <div id="velo" hidden></div>
+
+  <main>
+    <section id="info" aria-live="polite">
+      <div class="infoizq"><div id="fecha"></div><div id="chips"></div></div>
+      <div class="nav">
+        <button class="btn" id="vieja" title="Fecha anterior (←)" aria-label="Fecha más vieja">◀ <span>Más vieja</span></button>
+        <span id="pos"></span>
+        <button class="btn" id="nueva" title="Fecha siguiente (→)" aria-label="Fecha más nueva"><span>Más nueva</span> ▶</button>
+      </div>
+    </section>
+
+    <div id="herr" role="toolbar" aria-label="Herramientas">
+      <button class="btn soloMovil" id="bPanel">☰ Fechas</button>
+      <button class="btn soloMovil" id="bCapas" aria-expanded="false" aria-controls="capasGrupo">Capas</button>
+      <div class="grupo" id="capasGrupo" role="group" aria-label="Capas">
+        <button class="btn" id="poli" aria-pressed="true" title="Mostrar el polígono marcado (P)">Polígono</button>
+        <button class="btn" id="calles" aria-pressed="true" title="Mostrar calles, rutas y arroyos (C)">Calles</button>
+        <button class="btn" id="modo" aria-pressed="false" title="Blanco y negro: más nítido en las imágenes de 2 m (B)">Blanco y negro</button>
+      </div>
+      <button class="btn" id="comparar" aria-pressed="false" title="Comparar dos fechas con una cortina (X)"><span class="soloPC">◧ </span>Comparar</button>
+      <button class="btn" id="medir" aria-pressed="false" title="Medir distancias y superficies (M)"><span class="soloPC">📏 </span>Medir</button>
+      <span class="sep"></span>
+    </div>
+
+    <div id="escena">
+      <div id="lienzo">
+        <img id="fondo" alt="" hidden>
+        <div class="capa" id="capaA"><img alt=""><div class="tes" hidden><div class="mos"></div></div></div>
+        <div class="capa" id="capaB" hidden><img alt=""><div class="tes" hidden><div class="mos"></div></div></div>
+        <div id="marco"></div>
+        <svg id="ctx" preserveAspectRatio="none"></svg>
+        <svg id="polSvg" viewBox="0 0 1 1" preserveAspectRatio="none"><polygon id="contorno" fill="none" stroke="#ffe24a" stroke-width="2" vector-effect="non-scaling-stroke" stroke-dasharray="6 4"/></svg>
+        <svg id="medSvg" preserveAspectRatio="none"></svg>
+      </div>
+      <div class="sobre lado" id="ladoB" hidden></div>
+      <div class="sobre lado" id="ladoA" hidden></div>
+      <div id="divisor" hidden role="slider" aria-label="Cortina de comparación" tabindex="0"><i>⇆</i></div>
+      <div class="flot">
+        <button class="ic" id="zmas" title="Acercar (+)" aria-label="Acercar">+</button>
+        <button class="ic" id="zmenos" title="Alejar (−)" aria-label="Alejar">−</button>
+        <button class="ic txt" id="zzona" title="Encuadrar la zona (0)" aria-label="Encuadrar la zona">ZONA</button>
+        <button class="ic txt" id="zctx" title="Ver con todo el contexto alrededor (9)" aria-label="Ver con el contexto" hidden>TODO</button>
+      </div>
+      <div class="sobre" id="cargando" hidden>Cargando imagen…</div>
+      <div class="sobre" id="aviso" hidden></div>
+      <div class="sobre" id="coords" hidden></div>
+      <div class="sobre" id="escala"><span id="escalaTxt"></span><i id="escalaBarra"></i></div>
+      <div class="sobre" id="credito"></div>
+      <div id="cmpbar" hidden>
+        <span id="cmpTxt"></span>
+        <button class="btn" id="cmpSolo" aria-pressed="false" title="Ver solo la fecha fijada, sin cortina (espacio)">Ver solo la fijada</button>
+        <button class="btn" id="cmpFijar" title="Usar la fecha que estás viendo como la fijada">Fijar esta</button>
+        <button class="btn" id="cmpSalir">Salir</button>
+      </div>
+      <div id="medPanel" hidden>
+        <span id="medTxt"></span>
+        <button class="btn" id="medDeshacer">Deshacer</button>
+        <button class="btn" id="medBorrar">Borrar</button>
+        <button class="btn" id="medSalir">Listo</button>
+      </div>
+    </div>
+
+    <div id="linea"><svg id="tl" tabindex="0" role="img" aria-label="Línea de tiempo: cada punto es una imagen, a la altura del río de ese día"></svg></div>
+  </main>
+</div>
+
+<dialog id="dlgAyuda">
+  <div class="dcab"><h2>Cómo se usa</h2><button class="x" data-cerrar aria-label="Cerrar">✕</button></div>
+  <div class="dcuerpo">
+    <h3>Cambiar de fecha</h3>
+    <p>Elegí una fecha en la lista, tocá un punto de la línea de tiempo de abajo (se puede arrastrar el dedo o el mouse sobre ella) o usá «más vieja» / «más nueva». El encuadre y el zoom se mantienen al cambiar de fecha.</p>
+    <p>En la línea de tiempo cada punto es una imagen: cuanto más arriba, más alto estaba el río ese día. El color indica la fuente.</p>
+    <h3>Comparar dos fechas</h3>
+    <p>«Comparar» fija la fecha que estás viendo y abre una cortina: a la izquierda queda la fijada y a la derecha la que elijas después. Arrastrá la cortina para destapar una u otra.</p>
+    <h3>Medir</h3>
+    <p>«Medir» y después tocá puntos sobre la imagen: da el largo del recorrido y, con tres puntos o más, la superficie encerrada. El error es de unos pocos metros.</p>
+    <h3 class="soloPC">Mouse y teclado</h3>
+    <table class="soloPC">
+      <tr><td>Rueda · doble clic</td><td>Acercar o alejar</td></tr>
+      <tr><td>Arrastrar</td><td>Mover la imagen</td></tr>
+      <tr><td><kbd>←</kbd> <kbd>→</kbd></td><td>Fecha más vieja / más nueva</td></tr>
+      <tr><td><kbd>+</kbd> <kbd>−</kbd> <kbd>0</kbd> <kbd>9</kbd></td><td>Acercar, alejar, encuadrar la zona, ver todo el contexto</td></tr>
+      <tr><td><kbd>P</kbd> <kbd>C</kbd> <kbd>B</kbd></td><td>Polígono, calles, blanco y negro</td></tr>
+      <tr><td><kbd>X</kbd> <kbd>espacio</kbd></td><td>Comparar; ver solo la fecha fijada</td></tr>
+      <tr><td><kbd>M</kbd> <kbd>Esc</kbd></td><td>Medir; salir de medir o de comparar</td></tr>
+    </table>
+    <h3 class="soloMovil">En el celular</h3>
+    <p class="soloMovil">Pellizcá para acercar, arrastrá para mover y tocá dos veces para acercar rápido. «Fechas» abre la lista completa con los filtros.</p>
+  </div>
+</dialog>
+
+<dialog id="dlgFuentes">
+  <div class="dcab"><h2>Fuentes y criterios</h2><button class="x" data-cerrar aria-label="Cerrar">✕</button></div>
+  <div class="dcuerpo">
+    <div id="leyenda"></div>
+    <div id="fuente"></div>
+    <div id="analisis"><!--ANALISIS--></div>
+  </div>
+</dialog>
+
+<script>
+const D = /*DATOS*/null;
+const $ = id => document.getElementById(id), E = D.escenas, [, , RES, W, H] = D.grilla;
+// Las imágenes se piden a través de una función: en la versión publicada llegan cifradas y se descifran antes de mostrarlas.
+const SRC = window.__src || ((el, ruta) => {
+  el.dataset.pide = ruta; const t = new Image();
+  t.onload = () => { if (el.dataset.pide === ruta) el.src = ruta; };
+  t.onerror = () => { if (el.dataset.pide === ruta) el.dispatchEvent(new Event("error")); };
+  t.src = ruta;
+});
+const movil = () => innerWidth <= 760;
+const captura = (el, id) => { try { el.setPointerCapture(id); } catch (err) {} };
+const coma = (n, d = 2) => n.toFixed(d).replace(".", ",");
+const resTxt = r => r < 1 ? coma(r, 2).replace(/0+$/, "").replace(/,$/, "") : String(Math.round(r));   // 0,46 · 0,5 · 2 · 10
+const dma = f => f.slice(8) + "/" + f.slice(5, 7) + "/" + f.slice(0, 4);
+const fechaLarga = f => new Date(f + "T12:00:00").toLocaleDateString("es-AR", { day: "numeric", month: "long", year: "numeric" });
+const nombreDe = e => e.etiqueta || (e.fecha ? fechaLarga(e.fecha) : e.satelite);
+const clase = e => e.estado ? e.estado.split(" ")[1].replace(/s$/, "") : "nd";
+const tienePan = e => e.pan ?? (e.resolucion_m <= 2 && !e.teselas);
+const FUENTES = [["Crecida", "Crecida de referencia (2016)", "#ff6b6b"], ["Google Earth", "Google Earth", "#ffd24a"], ["Esri", "Esri (Maxar)", "#ff7ad9"], ["CBERS", "2 m (CBERS-4A)", "#4fd8ff"], ["Bing", "Bing Maps", "#b79cff"]];
+const fuenteDe = e => { const f = FUENTES.find(x => e.satelite.startsWith(x[0])); return f ? { clave: f[0], nombre: f[1], color: f[2] } : { clave: e.satelite, nombre: e.satelite, color: "#cfd9de" }; };
+const creditoDe = e => e.credito || ({ "Google Earth": "Imagen: Google Earth © Google y sus proveedores", "Bing": "Imagen © Microsoft Bing", "CBERS": "Imagen: CBERS-4A WPM · INPE (Brasil)" })[fuenteDe(e).clave] || "";
+let guardado = {}; try { guardado = JSON.parse(localStorage.getItem("vistaZona") || "{}"); } catch (err) {}
+const guardar = () => { try { localStorage.setItem("vistaZona", JSON.stringify({ poli: capas.poli, calles: capas.calles, bw })); } catch (err) {} };
+
+let i = 0, bw = !!guardado.bw, v = { s: 1, x: 0, y: 0 }, tocado = false, cmp = null, corte = 0.5, soloFijada = false, filtroF = null, filtroA = null;
+const capas = { poli: guardado.poli !== false, calles: guardado.calles !== false };
+const med = { on: false, pts: [] };
+const escena = $("escena"), lienzo = $("lienzo");
+const capaDe = id => { const c = $(id); return { c, im: c.querySelector("img"), tes: c.querySelector(".tes"), mos: c.querySelector(".mos"), carga: false, turno: 0 }; };
+const A = capaDe("capaA"), B = capaDe("capaB");
+[A, B].forEach(L => { L.c.style.width = W + "px"; L.c.style.height = H + "px"; L.im.width = W; L.im.height = H; L.tes.style.width = W + "px"; L.tes.style.height = H + "px"; L.im.draggable = false; });
+$("marco").style.width = W + "px"; $("marco").style.height = H + "px";
+
+// ---------- textos fijos ----------
+$("titulo").textContent = D.zona;
+const CF = E.filter(e => e.fecha);
+$("sub").textContent = `${E.length} imágenes · ${CF[CF.length - 1].fecha.slice(0, 4)} a ${CF[0].fecha.slice(0, 4)} · ${coma(D.ancho_km, 1)} × ${coma(D.alto_km, 1)} km`;
+$("contorno").setAttribute("points", D.poligono_px.map(p => p.join(",")).join(" "));
+const usadas = [...new Map(E.map(e => [fuenteDe(e).clave, fuenteDe(e)])).values()];
+$("leyenda").innerHTML = `<h3>Qué significan los colores</h3><div class="ley">${usadas.map(f => `<span><i class="punto" style="background:${f.color}"></i>${f.nombre}</span>`).join("")}</div>
+  <div class="ley"><span><b class="et baja">aguas bajas</b> menos de ${coma(D.criterio_alturas.bajas_menos_de)} m</span><span><b class="et media">aguas medias</b></span>
+  <span><b class="et alta">aguas altas</b> más de ${coma(D.criterio_alturas.altas_mas_de)} m</span><span><b class="et nd">s/d</b> sin dato ese día</span></div>`;
+$("fuente").innerHTML = `<h3>De dónde sale cada cosa</h3><p>${D.fuente}. Cada píxel de esta vista son ${coma(RES, 1)} m. La fecha de cada imagen es la que informa su proveedor.</p>
+  <p>Altura: Paraná en el puerto de Santa Fe ese día (INA). Es la del puerto, no la del lugar: sirve para ordenar las fechas, no como nivel local.</p>
+  <p>En las imágenes de 2 m el color de los objetos chicos es aproximado: el detalle fino viene de la versión en blanco y negro.</p>` +
+  (D.contexto ? `<p>Calles, rutas y arroyos: ${D.contexto.fuente}.</p>` : "");
+
+// ---------- calles y nombres ----------
+const ctx = $("ctx");
+if (D.contexto) {
+  ctx.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  const COL = { ruta: "#ffd24a", calle: "#ffffff", camino: "#d9c7a3", agua: "#6fd3ff", via: "#ff8a8a" }, ANCHO = { ruta: 3, calle: 1.2, camino: 1.2, agua: 1.6, via: 2 };
+  const NS = "http://www.w3.org/2000/svg", largos = {};
+  D.contexto.lineas.forEach(l => {
+    const p = document.createElementNS(NS, "polyline");
+    p.setAttribute("points", l.pts.map(q => q.join(",")).join(" "));
+    p.setAttribute("fill", "none"); p.setAttribute("stroke", COL[l.tipo]); p.setAttribute("stroke-width", ANCHO[l.tipo]);
+    p.setAttribute("stroke-opacity", l.tipo === "agua" ? 0.75 : 0.6); p.setAttribute("vector-effect", "non-scaling-stroke");
+    if (l.tipo === "camino") p.setAttribute("stroke-dasharray", "5 4");
+    ctx.append(p);
+    if (!l.nombre) return;
+    let len = 0; for (let k = 1; k < l.pts.length; k++) len += Math.hypot(l.pts[k][0] - l.pts[k - 1][0], l.pts[k][1] - l.pts[k - 1][1]);
+    const m = l.pts[Math.floor(l.pts.length / 2)];
+    if (m[0] > 20 && m[0] < W - 20 && m[1] > 20 && m[1] < H - 20 && (!largos[l.nombre] || len > largos[l.nombre].len)) largos[l.nombre] = { len, m, tipo: l.tipo };
+  });
+  Object.entries(largos).forEach(([nombre, o]) => {
+    const t = document.createElementNS(NS, "text");
+    t.textContent = nombre; t.setAttribute("x", o.m[0]); t.setAttribute("y", o.m[1] - 6); t.setAttribute("text-anchor", "middle");
+    t.setAttribute("font-size", o.tipo === "calle" ? 15 : 24); t.setAttribute("fill", COL[o.tipo]); t.setAttribute("font-family", "system-ui, sans-serif");
+    t.setAttribute("font-weight", 600); t.setAttribute("stroke", "#000"); t.setAttribute("stroke-width", 3); t.setAttribute("paint-order", "stroke");
+    ctx.append(t);
+  });
+} else $("calles").hidden = true;
+$("medSvg").setAttribute("viewBox", `0 0 ${W} ${H}`);
+if (D.fondo) { lienzo.classList.add("confondo"); $("zctx").hidden = false; }
+
+// ---------- lista y filtros ----------
+const coincide = e => (!filtroF || fuenteDe(e).clave === filtroF) && (!filtroA || clase(e) === filtroA);
+const visibles = () => E.map((e, k) => k).filter(k => coincide(E[k]));
+function chips(cont, opciones, actual, elegir) {
+  cont.innerHTML = "";
+  opciones.forEach(o => {
+    const b = document.createElement("button"); b.className = "chipf"; b.setAttribute("aria-pressed", String(actual() === o.v));
+    b.innerHTML = (o.color ? `<i class="punto" style="background:${o.color}"></i>` : "") + o.t + (o.n != null ? ` <span style="opacity:.7">${o.n}</span>` : "");
+    b.onclick = () => { elegir(o.v); filtrar(); };
+    cont.append(b);
+  });
+}
+function armarFiltros() {
+  $("fFuente").hidden = usadas.length < 2;   // con una sola fuente el filtro no aporta
+  chips($("fFuente"), [{ v: null, t: "Todas", n: E.length }].concat(usadas.map(f => ({ v: f.clave, t: f.nombre, color: f.color, n: E.filter(e => fuenteDe(e).clave === f.clave).length }))), () => filtroF, x => filtroF = x);
+  const cuenta = c => E.filter(e => clase(e) === c).length;
+  chips($("fAgua"), [{ v: null, t: "Cualquier altura" }, { v: "alta", t: "Aguas altas", n: cuenta("alta") }, { v: "media", t: "Medias", n: cuenta("media") }, { v: "baja", t: "Bajas", n: cuenta("baja") }]
+    .filter(o => o.v === null || o.n), () => filtroA, x => filtroA = x);
+}
+function filtrar() {
+  armarFiltros();
+  const vis = new Set(visibles());
+  let cab = null, hay = false;
+  [...$("lista").children].forEach(n => {
+    if (n.classList.contains("anio")) { if (cab) cab.hidden = !hay; cab = n; hay = false; }
+    else if (n.dataset.k != null) { const ok = vis.has(+n.dataset.k); n.hidden = !ok; hay = hay || ok; }
+  });
+  if (cab) cab.hidden = !hay;
+  $("vacio").hidden = vis.size > 0;
+  $("cuenta").textContent = vis.size === E.length ? `${E.length} imágenes` : `${vis.size} de ${E.length}`;
+  if (vis.size && !vis.has(i)) ir([...vis].reduce((a, b) => Math.abs(b - i) < Math.abs(a - i) ? b : a)); else refrescar();
+}
+let anio = "";
+E.forEach((e, k) => {
+  const esteAnio = e.fecha ? e.fecha.slice(0, 4) : "Sin fecha";
+  if (esteAnio !== anio) { anio = esteAnio; const d = document.createElement("div"); d.className = "anio"; d.textContent = anio; $("lista").append(d); }
+  const b = document.createElement("button"), f = fuenteDe(e);
+  b.className = "it"; b.dataset.k = k;
+  const fechaTxt = !e.fecha ? e.satelite : (e.dia_confirmado === false ? "" : e.fecha.slice(8) + "/") + e.fecha.slice(5, 7) + "/" + e.fecha.slice(0, 4);
+  b.innerHTML = `<i class="punto" style="background:${f.color}"></i><span class="f">${fechaTxt}</span><span class="et ${clase(e)}">${e.parana_sf_m == null ? "s/d" : coma(e.parana_sf_m) + " m"}</span>
+    <small>${f.nombre}${e.resolucion_m && f.clave !== "CBERS" ? " · " + resTxt(e.resolucion_m) + " m" : ""}${e.dia_confirmado === false ? " · día sin confirmar" : ""}</small>`;
+  b.onclick = () => { ir(k); cerrarPanel(); };
+  e._b = b; $("lista").append(b);
+});
+{ const d = document.createElement("div"); d.id = "vacio"; d.hidden = true; d.textContent = "Ninguna imagen cumple con esos filtros."; $("lista").append(d); }
+
+// ---------- vista: zoom y encuadre ----------
+function aplicar() {
+  lienzo.style.transform = `translate(${v.x}px,${v.y}px) scale(${v.s})`;
+  lienzo.classList.toggle("pixel", v.s > 2);
+  const mPorPx = RES / v.s, objetivo = 110 * mPorPx, pasos = [2, 5, 10, 20, 50, 100, 200, 500, 1000, 2000, 5000];
+  const m = pasos.reduce((a, b) => Math.abs(b - objetivo) < Math.abs(a - objetivo) ? b : a);
+  $("escalaTxt").textContent = m >= 1000 ? m / 1000 + " km" : m + " m";
+  $("escalaBarra").style.width = m / mPorPx + "px";
+  cortina();
+}
+const caja = () => escena.getBoundingClientRect();
+function encuadrar(x0, y0, an, al, margen) {
+  const r = caja(); v.s = Math.min(r.width / an, r.height / al) * margen;
+  v.x = (r.width - an * v.s) / 2 - x0 * v.s; v.y = (r.height - al * v.s) / 2 - y0 * v.s; aplicar();
+}
+const verZona = (margen = 0.96) => encuadrar(0, 0, W, H, margen);
+const verTodo = () => D.fondo ? encuadrar(D.fondo.x, D.fondo.y, D.fondo.w, D.fondo.h, 0.98) : verZona();
+const inicial = () => verZona(D.fondo ? (movil() ? 0.9 : 0.62) : 0.97);
+function limites() { const r = caja(), F = D.fondo; return [Math.min(r.width / (F ? F.w : W), r.height / (F ? F.h : H)) * 0.6, 8]; }
+function zoom(f, cx, cy) {
+  const r = caja(), [mn, mx] = limites(); cx = cx ?? r.width / 2; cy = cy ?? r.height / 2;
+  const s = Math.max(mn, Math.min(mx, v.s * f));
+  v.x = cx - (cx - v.x) * s / v.s; v.y = cy - (cy - v.y) * s / v.s; v.s = s; tocado = true; aplicar();
+}
+
+// ---------- pintar una fecha en una capa ----------
+function cargando(L, si) { L.carga = si; $("cargando").hidden = !(A.carga || (cmp && B.carga)); }
+function pintar(L, e) {
+  const T = e.teselas, turno = ++L.turno;
+  cargando(L, true);
+  if (T) {   // se muestra en vivo desde el servidor del proveedor (no se guarda)
+    L.im.style.visibility = "hidden"; L.tes.hidden = false;
+    if (L.tes.dataset.rel !== String(T.release)) {
+      L.tes.dataset.rel = T.release; L.mos.innerHTML = ""; L.mos.style.transform = `matrix(${T.m.join(",")})`;
+      let faltan = (T.ty1 - T.ty0 + 1) * (T.tx1 - T.tx0 + 1), fallas = 0;
+      const una = mal => { fallas += mal; if (--faltan === 0 && L.turno === turno) { cargando(L, false); if (fallas > faltan + 20) avisar("No se pudo cargar esta imagen desde el servidor del proveedor. Probá de nuevo en un rato."); } };
+      for (let y = T.ty0; y <= T.ty1; y++) for (let x = T.tx0; x <= T.tx1; x++) {
+        const im = new Image(); im.draggable = false; im.alt = ""; im.style.left = (x - T.tx0) * 256 + "px"; im.style.top = (y - T.ty0) * 256 + "px";
+        im.onload = () => una(0); im.onerror = () => una(1);
+        im.src = T.url.replace("{z}", T.z).replace("{y}", y).replace("{x}", x); L.mos.append(im);
+      }
+    } else cargando(L, false);
+    L.tes.style.filter = bw ? "grayscale(1) contrast(1.15)" : "";
+  } else {
+    L.tes.hidden = true; L.im.style.visibility = "";
+    const ruta = "img/" + (e.clave || e.fecha) + (bw && tienePan(e) ? "_pan" : "") + ".jpg";
+    L.im.style.filter = bw && !tienePan(e) ? "grayscale(1) contrast(1.15)" : "";   // sin pancromática propia: gris sobre el color
+    if (L.im.dataset.ruta === ruta && L.im.complete && L.im.naturalWidth) cargando(L, false);
+    else { L.im.dataset.ruta = ruta; L.im.onload = () => { if (L.turno === turno) { cargando(L, false); $("aviso").hidden = true; } };
+           L.im.onerror = () => { if (L.turno === turno) { cargando(L, false); L.im.dataset.ruta = ""; avisar("No se pudo cargar esta imagen. Revisá la conexión y volvé a elegir la fecha."); } };
+           SRC(L.im, ruta); }
+  }
+}
+function avisar(t) { $("aviso").textContent = t; $("aviso").hidden = false; clearTimeout(avisar.t); avisar.t = setTimeout(() => $("aviso").hidden = true, 7000); }
+function precargar(k) { const e = E[k]; if (!e || e.teselas) return; const t = new Image(); SRC(t, "img/" + (e.clave || e.fecha) + (bw && tienePan(e) ? "_pan" : "") + ".jpg"); }
+
+// ---------- cambiar de fecha ----------
+function ir(k) {
+  i = Math.max(0, Math.min(E.length - 1, k));
+  const e = E[i];
+  $("aviso").hidden = true;
+  pintar(A, e);
+  if (D.fondo) {   // contexto: la imagen de la zona amplia con fecha más cercana a la que se está mirando
+    const F = D.fondo, t0 = new Date(e.fecha || F.imagenes[0].fecha).getTime();
+    const mejor = F.imagenes.reduce((a, b) => Math.abs(new Date(b.fecha) - t0) < Math.abs(new Date(a.fecha) - t0) ? b : a);
+    const fo = $("fondo"); fo.hidden = false; fo.style.left = F.x + "px"; fo.style.top = F.y + "px"; fo.style.width = F.w + "px"; fo.style.height = F.h + "px";
+    if (fo.dataset.ruta !== mejor.src) { fo.dataset.ruta = mejor.src; SRC(fo, mejor.src); }
+    D._fondoFecha = mejor.fecha;
+  }
+  refrescar();
+  const vis = visibles(), p = vis.indexOf(i);
+  precargar(vis[p + 1]); precargar(vis[p - 1]);
+}
+function refrescar() {
+  const e = E[i], f = fuenteDe(e), vis = visibles(), p = vis.indexOf(i);
+  $("fecha").textContent = nombreDe(e);
+  const res = e.resolucion_m ? ` · ${resTxt(e.resolucion_m)} m por píxel` : "";
+  let h = `<span class="chip"><i class="punto" style="background:${f.color}"></i>${f.nombre}${res}</span>`;
+  h += e.parana_sf_m == null ? `<span class="chip"><b class="et nd">s/d</b> altura del río sin dato</span>`
+     : `<span class="chip"><b class="et ${clase(e)}">${coma(e.parana_sf_m)} m</b> Paraná en Santa Fe · ${e.estado}</span>`;
+  if (e.dia_confirmado === false) h += `<span class="chip avi">día sin confirmar</span>`;
+  if (String(e.alineada).startsWith("no")) h += `<span class="chip avi">ubicación sin ajustar</span>`;
+  if (e.sin_fecha) h += `<span class="chip avi">sin fecha: no sirve para fechar cambios</span>`;
+  if (e.teselas) h += `<span class="chip ten">en vivo desde Esri</span>`;
+  if (D.fondo && D._fondoFecha) h += `<span class="chip ten soloPC">alrededor: imagen de 2 m del ${dma(D._fondoFecha)}</span>`;
+  $("chips").innerHTML = h;
+  $("credito").textContent = creditoDe(e);
+  $("pos").textContent = p < 0 ? "" : `${vis.length - p} / ${vis.length}`;
+  $("nueva").disabled = p <= 0; $("vieja").disabled = p < 0 || p >= vis.length - 1;
+  E.forEach((x, k) => { x._b.classList.toggle("activa", k === i); x._b.classList.toggle("fijada", !!cmp && k === cmp.k); x._b.setAttribute("aria-current", k === i ? "true" : "false"); });
+  if (!movil() || $("panel").classList.contains("abierto")) e._b.scrollIntoView({ block: "nearest" });
+  $("poli").setAttribute("aria-pressed", capas.poli); $("polSvg").style.display = capas.poli ? "" : "none";
+  $("calles").setAttribute("aria-pressed", capas.calles); ctx.style.display = capas.calles ? "" : "none";
+  $("modo").setAttribute("aria-pressed", bw);
+  $("comparar").setAttribute("aria-pressed", !!cmp); $("medir").setAttribute("aria-pressed", med.on);
+  if (cmp) { $("cmpTxt").innerHTML = cmp.k === i ? "Elegí otra fecha para comparar con la fijada" : `<b style="color:var(--fijada)">${nombreDe(E[cmp.k])}</b> ⇆ <b style="color:var(--acento)">${nombreDe(e)}</b>`;
+             $("ladoB").textContent = "Fijada: " + nombreDe(E[cmp.k]); $("ladoA").textContent = nombreDe(e); $("cmpSolo").setAttribute("aria-pressed", soloFijada); }
+  linea();
+}
+function mover(d) { const vis = visibles(), p = vis.indexOf(i); if (p < 0) { if (vis.length) ir(vis[0]); return; } const q = p - d; if (q >= 0 && q < vis.length) ir(vis[q]); }   // d = +1: más nueva
+
+// ---------- comparar con cortina ----------
+function cortina() {
+  const on = !!cmp; B.c.hidden = !on; $("divisor").hidden = !on || soloFijada; $("cmpbar").hidden = !on; $("ladoA").hidden = $("ladoB").hidden = !on;
+  if (!on) return;
+  const r = caja(), px = corte * r.width, X = Math.max(0, Math.min(W, (px - v.x) / v.s));
+  B.c.style.clipPath = soloFijada ? "none" : `inset(0 ${W - X}px 0 0)`;
+  $("divisor").style.left = px + "px"; $("divisor").setAttribute("aria-valuenow", Math.round(corte * 100));
+  $("ladoB").style.left = "10px"; $("ladoB").style.right = "auto"; $("ladoB").style.maxWidth = Math.max(60, px - 30) + "px";
+  $("ladoA").style.left = Math.min(r.width - 120, px + 30) + "px"; $("ladoA").hidden = soloFijada;
+}
+function comparar(si) {
+  if (si) { cmp = { k: i }; corte = 0.5; soloFijada = false; pintar(B, E[i]); if (med.on) medirModo(false); }
+  else { cmp = null; soloFijada = false; }
+  cortina(); refrescar();
+}
+$("comparar").onclick = () => comparar(!cmp);
+$("cmpSalir").onclick = () => comparar(false);
+$("cmpFijar").onclick = () => { cmp.k = i; pintar(B, E[i]); refrescar(); };
+$("cmpSolo").onclick = () => { soloFijada = !soloFijada; cortina(); refrescar(); };
+{ const dv = $("divisor"); let arr = false;
+  const a = ev => { const r = caja(); corte = Math.max(0.02, Math.min(0.98, (ev.clientX - r.left) / r.width)); cortina(); };
+  dv.addEventListener("pointerdown", ev => { arr = true; captura(dv, ev.pointerId); ev.stopPropagation(); ev.preventDefault(); });
+  dv.addEventListener("pointermove", ev => { if (arr) a(ev); });
+  dv.addEventListener("pointerup", () => arr = false); dv.addEventListener("pointercancel", () => arr = false);
+  dv.addEventListener("keydown", ev => { if (ev.key === "ArrowLeft" || ev.key === "ArrowRight") { corte = Math.max(0.02, Math.min(0.98, corte + (ev.key === "ArrowLeft" ? -0.03 : 0.03))); cortina(); ev.preventDefault(); ev.stopPropagation(); } }); }
+
+// ---------- coordenadas y medición ----------
+const Q = D.esquinas_lonlat;   // NO, NE, SE, SO
+function lonlat(x, y) { if (!Q) return null; const u = x / W, w = y / H, c = k => Q[0][k] * (1 - u) * (1 - w) + Q[1][k] * u * (1 - w) + Q[2][k] * u * w + Q[3][k] * (1 - u) * w; return [c(0), c(1)]; }
+const coordTxt = (x, y) => { const p = lonlat(x, y); return p ? `${p[1].toFixed(5)}, ${p[0].toFixed(5)}` : ""; };
+const aLienzo = ev => { const r = caja(); return [(ev.clientX - r.left - v.x) / v.s, (ev.clientY - r.top - v.y) / v.s]; };
+const metros = m => m >= 1000 ? coma(m / 1000, 2) + " km" : coma(m, m < 100 ? 1 : 0) + " m";
+function medirPintar() {
+  const P = med.pts, s = $("medSvg");
+  s.innerHTML = (P.length > 2 ? `<polygon points="${P.map(p => p.join(",")).join(" ")}" fill="#ffe24a" fill-opacity=".12" stroke="none"/>` : "") +
+    (P.length > 1 ? `<polyline points="${P.map(p => p.join(",")).join(" ")}" fill="none" stroke="#000" stroke-width="5" stroke-opacity=".55" vector-effect="non-scaling-stroke" stroke-linejoin="round"/>
+      <polyline points="${P.map(p => p.join(",")).join(" ")}" fill="none" stroke="#ffe24a" stroke-width="2.5" vector-effect="non-scaling-stroke" stroke-linejoin="round"/>` : "") +
+    P.map(p => `<line x1="${p[0]}" y1="${p[1]}" x2="${p[0]}" y2="${p[1]}" stroke="#000" stroke-width="13" stroke-linecap="round" vector-effect="non-scaling-stroke"/>
+      <line x1="${p[0]}" y1="${p[1]}" x2="${p[0]}" y2="${p[1]}" stroke="#ffe24a" stroke-width="9" stroke-linecap="round" vector-effect="non-scaling-stroke"/>`).join("");
+  let largo = 0; for (let k = 1; k < P.length; k++) largo += Math.hypot(P[k][0] - P[k - 1][0], P[k][1] - P[k - 1][1]) * RES;
+  let area = 0; for (let k = 0; k < P.length; k++) { const a = P[k], b = P[(k + 1) % P.length]; area += a[0] * b[1] - b[0] * a[1]; } area = Math.abs(area) / 2 * RES * RES;
+  $("medTxt").innerHTML = !P.length ? "Tocá puntos sobre la imagen" : P.length === 1 ? `Punto en ${coordTxt(...P[0])} · tocá otro` :
+    `Largo <b>${metros(largo)}</b>` + (P.length > 2 ? ` · superficie <b>${area >= 10000 ? coma(area / 10000, 2) + " ha" : coma(area, 0) + " m²"}</b>` : "");
+  $("medDeshacer").disabled = $("medBorrar").disabled = !P.length;
+  if (P.length) { $("coords").hidden = false; $("coords").textContent = "Último punto: " + coordTxt(...P[P.length - 1]); }
+}
+function medirModo(si) {
+  med.on = si; $("medPanel").hidden = !si; escena.classList.toggle("mide", si);
+  if (si && cmp) comparar(false);
+  if (!si) { med.pts = []; if (movil()) $("coords").hidden = true; }
+  medirPintar(); refrescar();
+}
+$("medir").onclick = () => medirModo(!med.on);
+$("medSalir").onclick = () => medirModo(false);
+$("medBorrar").onclick = () => { med.pts = []; medirPintar(); };
+$("medDeshacer").onclick = () => { med.pts.pop(); medirPintar(); };
+
+// ---------- gestos sobre la imagen ----------
+const dedos = new Map(); let gesto = null, ultimoToque = { t: 0, x: 0, y: 0 };
+const esControl = ev => ev.target.closest(".flot, #divisor, #cmpbar, #medPanel");
+escena.addEventListener("pointerdown", ev => {
+  if (esControl(ev) || (ev.pointerType === "mouse" && ev.button !== 0)) return;
+  ev.preventDefault(); captura(escena, ev.pointerId); dedos.set(ev.pointerId, { x: ev.clientX, y: ev.clientY });
+  if (dedos.size === 1) gesto = { tipo: "mover", x0: ev.clientX, y0: ev.clientY, vx: v.x, vy: v.y, movio: false };
+  else if (dedos.size === 2) { const [a, b] = [...dedos.values()]; gesto = { tipo: "pellizco", d: Math.hypot(a.x - b.x, a.y - b.y) || 1, s: v.s, vx: v.x, vy: v.y, cx: (a.x + b.x) / 2, cy: (a.y + b.y) / 2 }; }
+});
+escena.addEventListener("pointermove", ev => {
+  if (ev.pointerType === "mouse" && !med.pts.length && Q) { const [x, y] = aLienzo(ev); $("coords").hidden = false; $("coords").textContent = coordTxt(x, y); }
+  if (!dedos.has(ev.pointerId) || !gesto) return;
+  dedos.set(ev.pointerId, { x: ev.clientX, y: ev.clientY });
+  if (gesto.tipo === "mover") {
+    const dx = ev.clientX - gesto.x0, dy = ev.clientY - gesto.y0;
+    if (!gesto.movio && Math.hypot(dx, dy) < 5) return;
+    gesto.movio = true; tocado = true; escena.classList.add("arrastra"); v.x = gesto.vx + dx; v.y = gesto.vy + dy; aplicar();
+  } else if (dedos.size >= 2) {
+    const [a, b] = [...dedos.values()], r = caja(), d = Math.hypot(a.x - b.x, a.y - b.y), [mn, mx] = limites();
+    const s = Math.max(mn, Math.min(mx, gesto.s * d / gesto.d)), ox = gesto.cx - r.left, oy = gesto.cy - r.top, cx = (a.x + b.x) / 2 - r.left, cy = (a.y + b.y) / 2 - r.top;
+    v.x = cx - (ox - gesto.vx) * s / gesto.s; v.y = cy - (oy - gesto.vy) * s / gesto.s; v.s = s; tocado = true; aplicar();
+  }
+});
+function soltar(ev) {
+  if (!dedos.has(ev.pointerId)) return;
+  const eraToque = gesto && gesto.tipo === "mover" && !gesto.movio && ev.type === "pointerup";
+  dedos.delete(ev.pointerId); escena.classList.remove("arrastra");
+  if (dedos.size === 1) { const [p] = [...dedos.values()]; gesto = { tipo: "mover", x0: p.x, y0: p.y, vx: v.x, vy: v.y, movio: true }; } else if (!dedos.size) gesto = null;
+  if (!eraToque) return;
+  if (med.on) { const [x, y] = aLienzo(ev); med.pts.push([Math.round(x * 10) / 10, Math.round(y * 10) / 10]); medirPintar(); return; }
+  if (ev.pointerType !== "mouse") {   // dos toques seguidos: acercar
+    const t = performance.now(), r = caja();
+    if (t - ultimoToque.t < 320 && Math.hypot(ev.clientX - ultimoToque.x, ev.clientY - ultimoToque.y) < 40) { zoom(2, ev.clientX - r.left, ev.clientY - r.top); ultimoToque.t = 0; }
+    else ultimoToque = { t, x: ev.clientX, y: ev.clientY };
+  }
+}
+escena.addEventListener("pointerup", soltar); escena.addEventListener("pointercancel", soltar);
+escena.addEventListener("pointerleave", () => { if (!med.pts.length) $("coords").hidden = true; });
+escena.addEventListener("dblclick", ev => { if (esControl(ev) || med.on) return; const r = caja(); zoom(ev.shiftKey ? 0.5 : 2, ev.clientX - r.left, ev.clientY - r.top); });
+escena.addEventListener("wheel", ev => { ev.preventDefault(); const r = caja(); zoom(ev.deltaY < 0 ? 1.22 : 1 / 1.22, ev.clientX - r.left, ev.clientY - r.top); }, { passive: false });
+escena.addEventListener("dragstart", ev => ev.preventDefault());
+$("zmas").onclick = () => zoom(1.5); $("zmenos").onclick = () => zoom(1 / 1.5);
+$("zzona").onclick = () => { tocado = true; verZona(); }; $("zctx").onclick = () => { tocado = true; verTodo(); };
+
+// ---------- línea de tiempo ----------
+const TL = { pts: [] };
+function linea() {
+  const svg = $("tl"), w = svg.clientWidth, h = svg.clientHeight; if (!w || !h) return;
+  svg.setAttribute("viewBox", `0 0 ${w} ${h}`);
+  const izq = 30, der = 12, arr = 9, aba = 16, piso = h - aba, t = f => new Date(f + "T12:00:00").getTime();
+  const t0 = t(CF[CF.length - 1].fecha), t1 = t(CF[0].fecha), dt = Math.max(1, t1 - t0);
+  const hs = CF.map(e => e.parana_sf_m).filter(x => x != null), hmin = Math.min(0, ...hs), hmax = Math.max(D.criterio_alturas.altas_mas_de + 0.6, ...hs) + 0.2;
+  const X = f => izq + (t(f) - t0) / dt * (w - izq - der), Y = m => arr + (hmax - m) / (hmax - hmin) * (piso - arr - 6);
+  const vis = new Set(visibles());
+  let s = `<rect x="${izq}" y="${Y(hmax)}" width="${w - izq - der}" height="${Y(D.criterio_alturas.altas_mas_de) - Y(hmax)}" fill="#5aa2ff" opacity=".08"/>`;
+  [["bajas_menos_de", "#e0a84a"], ["altas_mas_de", "#5aa2ff"]].forEach(([k, c]) => { const y = Y(D.criterio_alturas[k]);
+    s += `<line x1="${izq}" x2="${w - der}" y1="${y}" y2="${y}" stroke="${c}" stroke-opacity=".55" stroke-dasharray="3 4"/><text x="${izq - 4}" y="${y + 3.5}" text-anchor="end">${coma(D.criterio_alturas[k], 1)}</text>`; });
+  s += `<text x="${izq - 4}" y="${arr + 2}" text-anchor="end">m</text>`;
+  for (let a = +CF[CF.length - 1].fecha.slice(0, 4) + 1; a <= +CF[0].fecha.slice(0, 4); a++) { const x = X(a + "-01-01");
+    s += `<line x1="${x}" x2="${x}" y1="${arr}" y2="${piso}" stroke="#2a3840"/><text x="${x + 3}" y="${h - 4}">${a}</text>`; }
+  s += `<line x1="${izq}" x2="${w - der}" y1="${piso}" y2="${piso}" stroke="#2a3840"/>`;
+  TL.pts = [];
+  const punto = (e, k) => { const cx = X(e.fecha), sinH = e.parana_sf_m == null, cy = sinH ? piso - 3 : Y(e.parana_sf_m), f = fuenteDe(e), act = k === i, fij = cmp && k === cmp.k;
+    if (vis.has(k)) TL.pts.push([cx, cy, k]);
+    return (act ? `<line x1="${cx}" x2="${cx}" y1="${arr}" y2="${piso}" stroke="#fff" stroke-opacity=".5"/>` : "") +
+      (fij ? `<circle cx="${cx}" cy="${cy}" r="9" fill="none" stroke="#ffb347" stroke-width="2.5"/>` : "") +
+      `<circle cx="${cx}" cy="${cy}" r="${act ? 6.5 : 4}" fill="${sinH ? "none" : f.color}" stroke="${act ? "#fff" : sinH ? f.color : "#0e1418"}" stroke-width="${act ? 2 : sinH ? 1.5 : 1}" opacity="${vis.has(k) ? 1 : .18}"><title>${nombreDe(e)} · ${f.nombre}${sinH ? "" : " · " + coma(e.parana_sf_m) + " m"}</title></circle>`; };
+  E.forEach((e, k) => { if (e.fecha && k !== i && !(cmp && k === cmp.k)) s += punto(e, k); });
+  if (cmp && E[cmp.k].fecha && cmp.k !== i) s += punto(E[cmp.k], cmp.k);
+  if (E[i].fecha) s += punto(E[i], i);
+  svg.innerHTML = s;
+}
+{ const svg = $("tl"); let arr = false;
+  const elegir = ev => { const r = svg.getBoundingClientRect(), x = ev.clientX - r.left, y = ev.clientY - r.top; if (!TL.pts.length) return;
+    const m = TL.pts.reduce((a, b) => Math.hypot((b[0] - x) * 1, (b[1] - y) * 0.35) < Math.hypot((a[0] - x) * 1, (a[1] - y) * 0.35) ? b : a); if (m[2] !== i) ir(m[2]); };
+  svg.addEventListener("pointerdown", ev => { arr = true; captura(svg, ev.pointerId); elegir(ev); ev.preventDefault(); });
+  svg.addEventListener("pointermove", ev => { if (arr) elegir(ev); });
+  svg.addEventListener("pointerup", () => arr = false); svg.addEventListener("pointercancel", () => arr = false); }
+
+// ---------- botones, panel de fechas, ventanas, teclado ----------
+$("nueva").onclick = () => mover(1); $("vieja").onclick = () => mover(-1);
+$("modo").onclick = () => { bw = !bw; guardar(); pintar(A, E[i]); if (cmp) pintar(B, E[cmp.k]); refrescar(); };
+$("poli").onclick = () => { capas.poli = !capas.poli; guardar(); refrescar(); };
+$("calles").onclick = () => { capas.calles = !capas.calles; guardar(); refrescar(); };
+function abrirPanel() { $("panel").classList.add("abierto"); $("velo").hidden = false; E[i]._b.scrollIntoView({ block: "center" }); }
+function cerrarPanel() { $("panel").classList.remove("abierto"); $("velo").hidden = true; }
+const capasMenu = si => { $("capasGrupo").classList.toggle("abierto", si); $("bCapas").setAttribute("aria-expanded", si); };
+$("bCapas").onclick = () => capasMenu(!$("capasGrupo").classList.contains("abierto"));
+document.addEventListener("pointerdown", ev => { if (!ev.target.closest("#capasGrupo, #bCapas")) capasMenu(false); }, true);
+$("bPanel").onclick = abrirPanel; $("cerrarPanel").onclick = cerrarPanel; $("velo").onclick = cerrarPanel;
+$("bAyuda").onclick = () => $("dlgAyuda").showModal(); $("bFuentes").onclick = () => $("dlgFuentes").showModal();
+document.querySelectorAll("dialog").forEach(d => { d.addEventListener("click", ev => { if (ev.target === d || ev.target.closest("[data-cerrar]")) d.close(); }); });
+addEventListener("keydown", ev => {
+  if (document.querySelector("dialog[open]") || ev.ctrlKey || ev.metaKey || ev.altKey || /input|textarea|select/i.test(ev.target.tagName)) return;
+  const k = ev.key.toLowerCase();
+  if (k === "arrowleft" || k === "arrowdown") mover(-1); else if (k === "arrowright" || k === "arrowup") mover(1);
+  else if (k === "+" || k === "=") zoom(1.5); else if (k === "-") zoom(1 / 1.5); else if (k === "0") $("zzona").click(); else if (k === "9") $("zctx").click();
+  else if (k === "b") $("modo").click(); else if (k === "p") $("poli").click(); else if (k === "c") $("calles").click();
+  else if (k === "x") $("comparar").click(); else if (k === "m") $("medir").click();
+  else if (k === " ") { if (!cmp) return; $("cmpSolo").click(); }
+  else if (k === "escape") { if ($("panel").classList.contains("abierto")) cerrarPanel(); else if (med.on) medirModo(false); else if (cmp) comparar(false); else return; }
+  else return;
+  ev.preventDefault();
+});
+let ancho = innerWidth;
+addEventListener("resize", () => { if (!tocado || (ancho <= 760) !== movil()) { tocado = false; inicial(); } else aplicar(); ancho = innerWidth; if (!movil()) cerrarPanel(); linea(); });
+
+inicial(); ir(0); filtrar();
+if (window.ResizeObserver) new ResizeObserver(() => { if (!tocado) inicial(); linea(); }).observe(escena);
+</script>
+</body>
+</html>
