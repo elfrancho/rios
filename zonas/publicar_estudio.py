@@ -6,7 +6,7 @@ Uso: python zonas/publicar_estudio.py            -> arma zonas/_sitio/ (no sube 
 GitHub Pages gratuito no tiene páginas con contraseña. Acá las imágenes y los datos se suben CIFRADOS (AES-256-GCM) y la página
 los descifra en el navegador con la clave: sin la clave, lo publicado son archivos ilegibles, con nombres que no dicen nada.
 - Las claves están en zonas/_privado/claves.json (carpeta fuera de git), una por rol. Para cambiar una: editar ese archivo y volver a subir.
-- El contenido se cifra con una llave fija (zonas/_privado/contenido.bin); cada clave, con PBKDF2-SHA256 (600.000 vueltas), abre una
+- El contenido se cifra con una llave fija (zonas/_privado/contenido.bin); cada clave, con PBKDF2-SHA256 (200.000 vueltas), abre una
   "cerradura" que guarda esa llave y el rol. Así varias claves abren lo mismo y la página sabe con cuál se entró.
 - Registro de visitas: cada ingreso manda a GoatCounter un evento "estudio-zona/<rol>/<página>" (fecha, hora, navegador, sistema,
   pantalla y país; GoatCounter no guarda la IP). También anota los intentos con clave incorrecta. La pantalla de ingreso lo avisa.
@@ -23,7 +23,7 @@ AQUI = os.path.dirname(os.path.abspath(__file__))
 SITIO = os.path.join(AQUI, "_sitio")
 PRIVADO = os.path.join(AQUI, "_privado")
 REPO = "elfrancho/estudio-zona"
-VUELTAS = 600_000
+VUELTAS = 200_000   # cuánto cuesta probar una clave: más vueltas protege más, pero en un celular demora el ingreso
 CONTADOR = "elfrancho"   # GoatCounter: el mismo panel que el sitio de ríos; las visitas quedan bajo "estudio-zona/..."
 VISTAS = [("p", "zona_precisa", "index.html", "Zona de estudio"), ("g", "zona_a_investigar", "contexto.html", "Zona amplia")]
 
@@ -56,8 +56,11 @@ ACCESO = """<div id="acceso" style="position:fixed;inset:0;z-index:50;background
   async function leer(ruta) {
     const firma = new Uint8Array(await crypto.subtle.sign("HMAC", kMac, new TextEncoder().encode(ruta)));
     const nombre = [...firma.slice(0, 10)].map(x => x.toString(16).padStart(2, "0")).join("");
-    const r = await fetch("d/" + nombre + ".bin"); if (!r.ok) throw new Error("no está " + ruta);
-    const buf = new Uint8Array(await r.arrayBuffer());
+    const corte = new AbortController(), reloj = setTimeout(() => corte.abort(), 60000);   // si la conexión se cuelga, que falle y avise
+    try {
+      const r = await fetch("d/" + nombre + ".bin", { signal: corte.signal }); if (!r.ok) throw new Error("no está " + ruta);
+      var buf = new Uint8Array(await r.arrayBuffer());
+    } finally { clearTimeout(reloj); }
     return crypto.subtle.decrypt({ name: "AES-GCM", iv: buf.slice(0, 12) }, kAes, buf.slice(12));
   }
   // La vista pide cada imagen por acá: se baja cifrada, se descifra y recién entonces se muestra (la anterior queda a la vista mientras tanto).
@@ -75,7 +78,9 @@ ACCESO = """<div id="acceso" style="position:fixed;inset:0;z-index:50;background
     window.__D = JSON.parse(new TextDecoder().decode(await leer(PRE + "/datos.json")));
     if (guardar) sessionStorage.setItem("k", btoa(String.fromCharCode(...new Uint8Array(bits))) + "|" + rol);
     registrar(rol + "/" + (PRE === "p" ? "zona-de-estudio" : "zona-amplia") + (guardar ? "/ingreso" : ""));
-    el("acceso").remove(); window.__visor();
+    el("acceso").remove();
+    try { window.__visor(); }
+    catch (e) { document.body.insertAdjacentHTML("beforeend", '<p style="position:fixed;left:0;right:0;bottom:0;margin:0;padding:14px;background:#4a1f1f;color:#fff;font:14px system-ui;z-index:60">No se pudo abrir la vista en este navegador (' + (e && e.message) + '). Probá con Chrome, Edge, Firefox o Safari actualizados.</p>'); }
   }
   async function abrir(clave) {   // prueba la clave en cada cerradura; la que abre devuelve la llave de contenido y el rol
     const base = await crypto.subtle.importKey("raw", new TextEncoder().encode(clave), "PBKDF2", false, ["deriveKey"]);
@@ -94,7 +99,7 @@ ACCESO = """<div id="acceso" style="position:fixed;inset:0;z-index:50;background
   el("formClave").addEventListener("submit", async ev => {
     ev.preventDefault(); const err = el("errClave"), boton = el("entrar"), escrita = el("clave").value.trim();
     if (!window.crypto || !crypto.subtle) { err.textContent = "Este navegador no permite abrir el material. Probá con Chrome, Edge, Firefox o Safari actualizados."; return; }
-    err.style.color = "#9aabb4"; err.textContent = "Comprobando la clave…"; boton.disabled = true; boton.style.opacity = .6;
+    err.style.color = "#9aabb4"; err.textContent = "Comprobando la clave… en un celular puede tardar unos segundos."; boton.disabled = true; boton.style.opacity = .6;
     try {
       // las claves van en minúsculas: si el teclado puso una mayúscula, se prueba también sin ella
       const r = await abrir(escrita) || (escrita !== escrita.toLowerCase() ? await abrir(escrita.toLowerCase()) : null);

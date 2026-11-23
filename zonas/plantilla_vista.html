@@ -73,7 +73,7 @@
   #escena { position: relative; overflow: hidden; background: #000; cursor: grab; touch-action: none; min-height: 0; border-top: 1px solid var(--borde); border-bottom: 1px solid var(--borde); }
   #escena.arrastra { cursor: grabbing; }
   #escena.mide { cursor: crosshair; }
-  #lienzo { position: absolute; left: 0; top: 0; transform-origin: 0 0; will-change: transform; }
+  #lienzo { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
   #lienzo img { display: block; max-width: none; user-select: none; -webkit-user-drag: none; pointer-events: none; }
   #lienzo.pixel img { image-rendering: pixelated; }
   #fondo { position: absolute; filter: brightness(.78) saturate(.85); }
@@ -437,7 +437,11 @@ function zoom(f, cx, cy) {
 }
 
 // ---------- pintar una fecha en una capa ----------
-function cargando(L, si) { L.carga = si; $("cargando").hidden = !(A.carga || (cmp && B.carga)); }
+function cargando(L, si) {
+  L.carga = si; const on = A.carga || (!!cmp && B.carga);
+  $("cargando").hidden = !on; $("cargando").textContent = "Cargando imagen…"; clearTimeout(cargando.t);
+  if (on) cargando.t = setTimeout(() => { $("cargando").textContent = "Sigue cargando: la conexión está lenta…"; }, 12000);
+}
 function pintar(L, e) {
   const T = e.teselas, turno = ++L.turno;
   cargando(L, true);
@@ -476,13 +480,16 @@ function ir(k) {
   if (D.fondo) {   // contexto: la imagen de la zona amplia con fecha más cercana a la que se está mirando
     const F = D.fondo, t0 = new Date(e.fecha || F.imagenes[0].fecha).getTime();
     const mejor = F.imagenes.reduce((a, b) => Math.abs(new Date(b.fecha) - t0) < Math.abs(new Date(a.fecha) - t0) ? b : a);
-    const fo = $("fondo"); fo.hidden = false; fo.style.left = F.x + "px"; fo.style.top = F.y + "px"; fo.style.width = F.w + "px"; fo.style.height = F.h + "px";
+    const fo = $("fondo"); fo.hidden = false; fo.style.left = F.x + "px"; fo.style.top = F.y + "px"; fo.style.transformOrigin = "0 0";
+    const medir = () => { if (!fo.naturalWidth) return; fo.style.width = fo.naturalWidth + "px"; fo.style.height = fo.naturalHeight + "px";
+      fo.style.transform = `scale(${F.w / fo.naturalWidth},${F.h / fo.naturalHeight})`; fo.style.visibility = ""; };
+    fo.onload = medir; if (fo.naturalWidth) medir(); else fo.style.visibility = "hidden";
     if (fo.dataset.ruta !== mejor.src) { fo.dataset.ruta = mejor.src; SRC(fo, mejor.src); }
     D._fondoFecha = mejor.fecha;
   }
   refrescar();
   const vis = visibles(), p = vis.indexOf(i);
-  precargar(vis[p + 1]); precargar(vis[p - 1]);
+  clearTimeout(ir.t); ir.t = setTimeout(() => { if (!A.carga) { precargar(vis[p + 1]); precargar(vis[p - 1]); } }, 1500);
 }
 function refrescar() {
   const e = E[i], f = fuenteDe(e), vis = visibles(), p = vis.indexOf(i);
